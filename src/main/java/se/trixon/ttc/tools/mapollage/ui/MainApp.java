@@ -87,6 +87,7 @@ import se.trixon.almond.util.fx.FxHelper;
 import se.trixon.almond.util.fx.control.LogPanel;
 import se.trixon.almond.util.fx.dialogs.SimpleDialog;
 import se.trixon.almond.util.fx.dialogs.about.AboutPane;
+import se.trixon.ttc.RunState;
 import se.trixon.ttc.tools.mapollage.Mapollage;
 import se.trixon.ttc.tools.mapollage.Operation;
 import se.trixon.ttc.tools.mapollage.OperationListener;
@@ -591,10 +592,6 @@ public class MainApp extends Application {
                 FxHelper.undecorateButton(buttonBase);
             });
         });
-    }
-
-    public enum RunState {
-        STARTABLE, CANCELABLE, CLOSEABLE;
     }
 
     class ProfileListCell extends ListCell<Profile> {

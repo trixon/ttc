@@ -57,6 +57,7 @@ import se.trixon.almond.util.fx.dialogs.about.AboutPane;
 import se.trixon.almond.util.icons.material.MaterialIcon;
 import se.trixon.ttc.tools.fbd.FileByDate;
 import se.trixon.ttc.tools.fbd.ui.FbdModule;
+import se.trixon.ttc.tools.mapollage.ui.MapollageModule;
 
 /**
  *
@@ -74,6 +75,7 @@ public class MainApp extends Application {
     private Action mAboutDateFormatAction;
     private final AlmondFx mAlmondFX = AlmondFx.getInstance();
     private Action mHelpAction;
+    private MapollageModule mMapollageModule;
     private final Options mOptions = Options.getInstance();
     private Action mOptionsAction;
     private ToolbarItem mRefreshToolbarItem;
@@ -101,12 +103,13 @@ public class MainApp extends Application {
         mStage.show();
         initAccelerators();
 
-        mWorkbench.openModule(mFbdModule);
+        //mWorkbench.openModule(mFbdModule);
     }
 
     private void createUI() {
         mFbdModule = new FbdModule();
-        mWorkbench = Workbench.builder(mFbdModule).build();
+        mMapollageModule = new MapollageModule();
+        mWorkbench = Workbench.builder(mFbdModule, mMapollageModule).build();
 
         mWorkbench.getStylesheets().add(MainApp.class.getResource("customTheme.css").toExternalForm());
         initToolbar();
