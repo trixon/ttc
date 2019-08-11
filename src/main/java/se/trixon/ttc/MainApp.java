@@ -16,6 +16,7 @@
 package se.trixon.ttc;
 
 import com.dlsc.workbenchfx.Workbench;
+import com.dlsc.workbenchfx.model.WorkbenchDialog;
 import com.dlsc.workbenchfx.view.controls.ToolbarItem;
 import de.codecentric.centerdevice.MenuToolkit;
 import java.util.Optional;
@@ -23,6 +24,7 @@ import javafx.application.Application;
 import javafx.collections.ObservableMap;
 import javafx.event.ActionEvent;
 import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
@@ -35,8 +37,10 @@ import javafx.scene.image.Image;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
-import javafx.scene.paint.Color;
+import javafx.scene.layout.VBox;
+import javafx.scene.text.Font;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 import org.apache.commons.lang3.SystemUtils;
@@ -206,7 +210,28 @@ public class MainApp extends Application {
                     SystemHelper.getResourceAsImageView(MainApp.class, "logo.png")
             );
             aboutModel.setAppVersion(pomInfo.getVersion());
-            AboutPane.getAction(mStage, aboutModel).handle(null);
+            AboutPane aboutPane = new AboutPane(aboutModel);
+
+            double scaledFontSize = FxHelper.getScaledFontSize();
+            Label appLabel = new Label(aboutModel.getAppName());
+            appLabel.setFont(new Font(scaledFontSize * 1.8));
+            Label verLabel = new Label(String.format("%s %s", Dict.VERSION.toString(), aboutModel.getAppVersion()));
+            verLabel.setFont(new Font(scaledFontSize * 1.2));
+            Label dateLabel = new Label(aboutModel.getAppDate());
+            dateLabel.setFont(new Font(scaledFontSize * 1.2));
+
+            VBox box = new VBox(appLabel, verLabel, dateLabel);
+            box.setAlignment(Pos.CENTER_LEFT);
+            box.setPadding(new Insets(0, 0, 0, 22));
+            BorderPane topBorderPane = new BorderPane(box);
+            topBorderPane.setLeft(aboutModel.getImageView());
+            topBorderPane.setPadding(new Insets(22));
+            BorderPane mainBorderPane = new BorderPane(aboutPane);
+            mainBorderPane.setTop(topBorderPane);
+
+            WorkbenchDialog dialog = WorkbenchDialog.builder(Dict.ABOUT.toString(), mainBorderPane, ButtonType.CLOSE).build();
+            mWorkbench.showDialog(dialog);
+//            AboutPane.getAction(mStage, aboutModel).handle(null);
         });
 
         //about date format
@@ -229,14 +254,14 @@ public class MainApp extends Application {
     }
 
     private void initToolbar() {
-        mRefreshToolbarItem = new ToolbarItem(
-                Dict.REFRESH.toString(),
-                MaterialIcon._Navigation.REFRESH.getImageView(ICON_SIZE_TOOLBAR, Color.LIGHTGRAY),
-                event -> {
-                }
-        );
-
-        mWorkbench.getToolbarControlsRight().addAll(mRefreshToolbarItem);
+//        mRefreshToolbarItem = new ToolbarItem(
+//                Dict.REFRESH.toString(),
+//                MaterialIcon._Navigation.REFRESH.getImageView(ICON_SIZE_TOOLBAR, Color.LIGHTGRAY),
+//                event -> {
+//                }
+//        );
+//
+//        mWorkbench.getToolbarControlsRight().addAll(mRefreshToolbarItem);
     }
 
 }
