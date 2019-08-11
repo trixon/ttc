@@ -42,10 +42,10 @@ import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.SystemHelper;
 import se.trixon.almond.util.fx.control.FileChooserPane;
 import se.trixon.almond.util.fx.control.FileChooserPane.ObjectMode;
+import se.trixon.ttc.Options;
 import se.trixon.ttc.tools.fbd.DateSource;
 import se.trixon.ttc.tools.fbd.NameCase;
 import se.trixon.ttc.tools.fbd.Operation.Command;
-import se.trixon.ttc.Options;
 import se.trixon.ttc.tools.fbd.Profile;
 import se.trixon.ttc.tools.fbd.ProfileManager;
 
@@ -247,7 +247,9 @@ public class ProfilePanel extends GridPane {
         validationSupport.registerValidator(mDatePatternComboBox, indicateRequired, Validator.createPredicateValidator(datePredicate, text_is_required));
 
         validationSupport.validationResultProperty().addListener((ObservableValue<? extends ValidationResult> observable, ValidationResult oldValue, ValidationResult newValue) -> {
-            mOkButton.setDisable(validationSupport.isInvalid());
+            if (mOkButton != null) {
+                mOkButton.setDisable(validationSupport.isInvalid());
+            }
         });
 
         mFilePatternComboBox.getEditor().textProperty().addListener((observable, oldValue, newValue) -> {

@@ -65,6 +65,7 @@ public class MainApp extends Application {
     public static final int ICON_SIZE_DRAWER = ICON_SIZE_TOOLBAR / 2;
     public static final int MODULE_ICON_SIZE = 32;
     private static final boolean IS_MAC = SystemUtils.IS_OS_MAC;
+    private FbdModule mFbdModule;
     private Action mAboutAction;
     private Action mAboutDateFormatAction;
     private final AlmondFx mAlmondFX = AlmondFx.getInstance();
@@ -95,11 +96,13 @@ public class MainApp extends Application {
         mStage.setTitle(APP_TITLE);
         mStage.show();
         initAccelerators();
+
+        mWorkbench.openModule(mFbdModule);
     }
 
     private void createUI() {
-        FbdModule fbdModule = new FbdModule();
-        mWorkbench = Workbench.builder(fbdModule).build();
+        mFbdModule = new FbdModule();
+        mWorkbench = Workbench.builder(mFbdModule).build();
 
         mWorkbench.getStylesheets().add(MainApp.class.getResource("customTheme.css").toExternalForm());
         initToolbar();

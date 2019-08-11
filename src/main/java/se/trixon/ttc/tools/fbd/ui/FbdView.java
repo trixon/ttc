@@ -16,6 +16,7 @@
 package se.trixon.ttc.tools.fbd.ui;
 
 import com.dlsc.workbenchfx.Workbench;
+import com.dlsc.workbenchfx.model.WorkbenchDialog;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
@@ -23,7 +24,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.LinkedList;
-import java.util.Optional;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -33,12 +33,9 @@ import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Button;
 import javafx.scene.control.ButtonBar;
 import javafx.scene.control.ButtonBase;
 import javafx.scene.control.ButtonType;
-import javafx.scene.control.DialogPane;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
@@ -61,13 +58,13 @@ import org.controlsfx.glyphfont.GlyphFontRegistry;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.SystemHelper;
 import se.trixon.almond.util.fx.FxHelper;
+import se.trixon.ttc.Options;
+import se.trixon.ttc.RunState;
 import se.trixon.ttc.tools.fbd.NameCase;
 import se.trixon.ttc.tools.fbd.Operation;
 import se.trixon.ttc.tools.fbd.OperationListener;
-import se.trixon.ttc.Options;
 import se.trixon.ttc.tools.fbd.Profile;
 import se.trixon.ttc.tools.fbd.ProfileManager;
-import se.trixon.ttc.RunState;
 
 /**
  *
@@ -122,9 +119,6 @@ public class FbdView extends BorderPane {
     }
 
     void profileEdit(Profile profile) {
-        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-//        alert.initOwner(mStage);
-        alert.initOwner(null);
         String title = Dict.EDIT.toString();
         boolean addNew = false;
         boolean clone = profile != null && profile.getName() == null;
@@ -148,32 +142,31 @@ public class FbdView extends BorderPane {
             profile.setLastRun(0);
         }
 
-        alert.setTitle(title);
-        alert.setGraphic(null);
-        alert.setHeaderText(null);
-
         ProfilePanel profilePanel = new ProfilePanel(profile);
 
-        final DialogPane dialogPane = alert.getDialogPane();
-        dialogPane.setContent(profilePanel);
-        profilePanel.setOkButton((Button) dialogPane.lookupButton(ButtonType.OK));
+        final boolean add = addNew;
+        final Profile p = profile;
+        WorkbenchDialog dialog = WorkbenchDialog.builder(title, profilePanel, ButtonType.CANCEL, ButtonType.OK).onResult(buttonType -> {
+            if (buttonType == ButtonType.OK) {
+                profilePanel.save();
+                if (add || clone) {
+                    mProfiles.add(p);
+                }
 
-//        Optional<ButtonType> result = FxHelper.showAndWait(alert, mStage);
-        Optional<ButtonType> result = FxHelper.showAndWait(alert, null);
-        if (result.get() == ButtonType.OK) {
-            profilePanel.save();
-            if (addNew || clone) {
-                mProfiles.add(profile);
+                profilesSave();
+                populateProfiles(p);
             }
+        }).build();
 
-            profilesSave();
-            populateProfiles(profile);
-        }
+        dialog.setOnShown(event -> {
+            profilePanel.setOkButton(dialog.getButton(ButtonType.OK).get());
+        });
+
+        mWorkbench.showDialog(dialog);
     }
 
     private void createUI() {
         mDefaultFont = Font.getDefault();
-//        initActions();
 
         mListView = new ListView<>();
         mListView.setItems(mItems);
@@ -189,34 +182,6 @@ public class FbdView extends BorderPane {
         setBottom(mPreviewPanel);
     }
 
-//    private void initActions() {
-//        //cancel
-//        mCancelAction = new Action(Dict.CANCEL.toString(), (ActionEvent event) -> {
-//            mOperationThread.interrupt();
-//        });
-//        mCancelAction.setGraphic(mFontAwesome.create(FontAwesome.Glyph.BAN).size(ICON_SIZE_TOOLBAR).color(mIconColor));
-//
-//        //home
-//        mHomeAction = new Action(Dict.LIST.toString(), (ActionEvent event) -> {
-//            mLogAction.setDisabled(false);
-//            mModule.setRunningState(RunState.STARTABLE);
-//            setCenter(mListView);
-//        });
-//        mHomeAction.setGraphic(mFontAwesome.create(FontAwesome.Glyph.LIST).size(ICON_SIZE_TOOLBAR).color(mIconColor));
-//
-//        //log
-//        mLogAction = new Action(Dict.OUTPUT.toString(), (ActionEvent event) -> {
-//            mModule.setRunningState(RunState.CLOSEABLE);
-//            setCenter(mProgressPanel);
-//        });
-//        mLogAction.setGraphic(mFontAwesome.create(FontAwesome.Glyph.ALIGN_LEFT).size(ICON_SIZE_TOOLBAR).color(mIconColor));
-//        mLogAction.setDisabled(true);
-//
-//        mRunAction = new Action(Dict.RUN.toString(), (ActionEvent event) -> {
-//            profileRun(mLastRunProfile);
-//        });
-//        mRunAction.setGraphic(mFontAwesome.create(FontAwesome.Glyph.PLAY).size(ICON_SIZE_TOOLBAR).color(mIconColor));
-//    }
     private void initListeners() {
         mOperationListener = new OperationListener() {
             private boolean mSuccess;
@@ -297,70 +262,57 @@ public class FbdView extends BorderPane {
     }
 
     private void profileRemove(Profile profile) {
-        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-//        alert.initOwner(mStage);
-        alert.initOwner(null);
-        alert.setTitle(Dict.Dialog.TITLE_PROFILE_REMOVE.toString() + "?");
+        String title = Dict.Dialog.TITLE_PROFILE_REMOVE.toString() + "?";
         String message = String.format(Dict.Dialog.MESSAGE_PROFILE_REMOVE.toString(), profile.getName());
-        alert.setHeaderText(message);
 
         ButtonType removeButtonType = new ButtonType(Dict.REMOVE.toString(), ButtonBar.ButtonData.OK_DONE);
         ButtonType cancelButtonType = new ButtonType(Dict.CANCEL.toString(), ButtonBar.ButtonData.CANCEL_CLOSE);
-        alert.getButtonTypes().setAll(removeButtonType, cancelButtonType);
 
-        //TODO
-//        Optional<ButtonType> result= FxHelper.showAndWait(alert, mStage);
-        Optional<ButtonType> result = FxHelper.showAndWait(alert, null);
-        if (result.get() == removeButtonType) {
-            mProfiles.remove(profile);
-            profilesSave();
-            populateProfiles(null);
+        WorkbenchDialog dialog = WorkbenchDialog.builder(title, message, removeButtonType, cancelButtonType).onResult(buttonType -> {
+            if (buttonType == removeButtonType) {
+                mProfiles.remove(profile);
+                profilesSave();
+                populateProfiles(null);
 //            mLogAction.setDisabled(mItems.isEmpty() || mLastRunProfile == null);//TODO Restore 2019-08-10
-        }
+            }
+        }).build();
+        mWorkbench.showDialog(dialog);
     }
 
     private void profileRun(Profile profile) {
-        String title = String.format(Dict.Dialog.TITLE_PROFILE_RUN.toString(), profile.getName());
-        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-//        alert.initOwner(mStage);
-        alert.initOwner(null);
-
-        alert.setTitle(title);
-        alert.setGraphic(null);
-        alert.setHeaderText(null);
-
         PreviewPanel previewPanel = new PreviewPanel();
         previewPanel.load(profile);
-        final DialogPane dialogPane = alert.getDialogPane();
-        dialogPane.setContent(previewPanel);
 
         ButtonType runButtonType = new ButtonType(Dict.RUN.toString());
         ButtonType dryRunButtonType = new ButtonType(Dict.DRY_RUN.toString(), ButtonBar.ButtonData.OK_DONE);
         ButtonType cancelButtonType = new ButtonType(Dict.CANCEL.toString(), ButtonBar.ButtonData.CANCEL_CLOSE);
 
-        alert.getButtonTypes().setAll(runButtonType, dryRunButtonType, cancelButtonType);
-        Optional<ButtonType> result = alert.showAndWait();
-        if (result.get() != cancelButtonType) {
-            boolean dryRun = result.get() == dryRunButtonType;
-            profile.setDryRun(dryRun);
-            mProgressPanel.clear();
-            setCenter(mProgressPanel);
-            mIndicator.setProfile(profile);
+        String title = String.format(Dict.Dialog.TITLE_PROFILE_RUN.toString(), profile.getName());
 
-            if (profile.isValid()) {
-                mLastRunProfile = profile;
-                mOperationThread = new Thread(() -> {
-                    Operation operation = new Operation(mOperationListener, profile);
-                    operation.start();
-                });
-                mOperationThread.setName("Operation");
-                mOperationThread.start();
-            } else {
-                mProgressPanel.out(profile.toDebugString());
-                mProgressPanel.out(profile.getValidationError());
-                mProgressPanel.out(Dict.ABORTING.toString());
+        WorkbenchDialog dialog = WorkbenchDialog.builder(title, previewPanel, runButtonType, dryRunButtonType, cancelButtonType).onResult(buttonType -> {
+            if (buttonType != cancelButtonType) {
+                boolean dryRun = buttonType == dryRunButtonType;
+                profile.setDryRun(dryRun);
+                mProgressPanel.clear();
+                setCenter(mProgressPanel);
+                mIndicator.setProfile(profile);
+
+                if (profile.isValid()) {
+                    mLastRunProfile = profile;
+                    mOperationThread = new Thread(() -> {
+                        Operation operation = new Operation(mOperationListener, profile);
+                        operation.start();
+                    });
+                    mOperationThread.setName("Operation");
+                    mOperationThread.start();
+                } else {
+                    mProgressPanel.out(profile.toDebugString());
+                    mProgressPanel.out(profile.getValidationError());
+                    mProgressPanel.out(Dict.ABORTING.toString());
+                }
             }
-        }
+        }).build();
+        mWorkbench.showDialog(dialog);
     }
 
     private void profilesLoad() {
@@ -380,69 +332,6 @@ public class FbdView extends BorderPane {
         }
     }
 
-//    private void setRunningState(RunState runState) {
-//        ArrayList<Action> actions = new ArrayList<>();
-//
-//        switch (runState) {
-//            case STARTABLE:
-//                actions.addAll(Arrays.asList(
-//                        mLogAction
-//                //                        ActionUtils.ACTION_SPAN,
-//                //                        mAddAction
-//                ));
-////                mOptionsAction.setDisabled(false);
-//                break;
-//
-//            case CANCELABLE:
-//                actions.addAll(Arrays.asList(
-//                        mHomeAction,
-//                        ActionUtils.ACTION_SPAN,
-//                        mCancelAction
-//                ));
-//                mHomeAction.setDisabled(true);
-////                mOptionsAction.setDisabled(true);
-//                break;
-//
-//            case CLOSEABLE:
-//                actions.addAll(Arrays.asList(
-//                        mHomeAction,
-//                        ActionUtils.ACTION_SPAN,
-//                        mRunAction
-//                ));
-//                mHomeAction.setDisabled(false);
-////                mOptionsAction.setDisabled(false);
-//                break;
-//
-//            default:
-//                throw new AssertionError();
-//        }
-//
-////        actions.addAll(Arrays.asList(
-////                mOptionsAction,
-////                new ActionGroup(Dict.HELP.toString(), mFontAwesome.create(FontAwesome.Glyph.QUESTION).size(ICON_SIZE_TOOLBAR).color(mIconColor),
-////                        mHelpAction,
-////                        mAboutDateFormatAction,
-////                        ActionUtils.ACTION_SEPARATOR,
-////                        mAboutAction
-////                )
-////        ));
-//        Platform.runLater(() -> {
-//            if (mToolBar == null) {
-//                mToolBar = ActionUtils.createToolBar(actions, ActionUtils.ActionTextBehavior.HIDE);
-//                mRoot.setTop(mToolBar);
-//            } else {
-//                mToolBar = ActionUtils.updateToolBar(mToolBar, actions, ActionUtils.ActionTextBehavior.HIDE);
-//                mToolBar.getItems().add(1, mIndicator);
-//                mIndicator.setVisible(runState != RunState.STARTABLE);
-//            }
-//
-//            FxHelper.adjustButtonWidth(mToolBar.getItems().stream(), ICON_SIZE_TOOLBAR * 1.5);
-//            mToolBar.getItems().stream().filter((item) -> (item instanceof ButtonBase))
-//                    .map((item) -> (ButtonBase) item).forEachOrdered((buttonBase) -> {
-//                FxHelper.undecorateButton(buttonBase);
-//            });
-//        });
-//    }
     class ProfileListCell extends ListCell<Profile> {
 
         private final BorderPane mBorderPane = new BorderPane();

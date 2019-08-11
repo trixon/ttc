@@ -131,7 +131,7 @@ public class FbdModule extends WorkbenchModule {
         mRunToolbarItem = new ToolbarItem(
                 MaterialIcon._Av.PLAY_ARROW.getImageView(MainApp.ICON_SIZE_TOOLBAR),
                 event -> {
-                    mFbdView.profileEdit(null);
+                    mFbdView.doRun();
                 }
         );
         mRunToolbarItem.setTooltip(new Tooltip(Dict.START.toString()));
@@ -139,7 +139,7 @@ public class FbdModule extends WorkbenchModule {
         mCancelToolbarItem = new ToolbarItem(
                 MaterialIcon._Navigation.CANCEL.getImageView(MainApp.ICON_SIZE_TOOLBAR),
                 event -> {
-                    mFbdView.profileEdit(null);
+                    mFbdView.doCancel();
                 }
         );
         mCancelToolbarItem.setTooltip(new Tooltip(Dict.CANCEL.toString()));
