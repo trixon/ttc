@@ -23,8 +23,8 @@ import javafx.scene.Node;
 import javafx.scene.control.Tooltip;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.icons.material.MaterialIcon;
-import se.trixon.ttc.RunState;
 import se.trixon.ttc.MainApp;
+import se.trixon.ttc.RunState;
 
 public class FbdModule extends WorkbenchModule {
 
@@ -38,7 +38,7 @@ public class FbdModule extends WorkbenchModule {
     private ToolbarItem mRunToolbarItem;
 
     public FbdModule() {
-        super(Dict.TOOLS.toString(), MaterialIcon._Action.BUILD.getImageView(MainApp.MODULE_ICON_SIZE).getImage());
+        super("FileByDate", MaterialIcon._Action.DATE_RANGE.getImageView(MainApp.MODULE_ICON_SIZE).getImage());
     }
 
     @Override
