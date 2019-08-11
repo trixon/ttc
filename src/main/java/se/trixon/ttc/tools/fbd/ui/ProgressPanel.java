@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package se.trixon.filebydate.ui.fbd;
+package se.trixon.ttc.tools.fbd.ui;
 
 import java.util.prefs.PreferenceChangeEvent;
 import javafx.application.Platform;
@@ -27,7 +27,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.fx.control.LogPanel;
-import se.trixon.filebydate.Options;
+import se.trixon.ttc.Options;
 
 /**
  *

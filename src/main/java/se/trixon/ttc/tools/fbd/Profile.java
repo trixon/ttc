@@ -13,8 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package se.trixon.filebydate;
+package se.trixon.ttc.tools.fbd;
 
+import se.trixon.ttc.Options;
 import com.google.gson.annotations.SerializedName;
 import java.io.File;
 import java.nio.file.FileSystems;
@@ -28,8 +29,8 @@ import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.SystemHelper;
-import se.trixon.filebydate.Operation.Command;
-import se.trixon.filebydate.ui.fbd.FbdModule;
+import se.trixon.ttc.tools.fbd.Operation.Command;
+import se.trixon.ttc.tools.fbd.ui.FbdModule;
 
 /**
  *

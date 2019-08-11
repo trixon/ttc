@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package se.trixon.filebydate.ui.fbd;
+package se.trixon.ttc.tools.fbd.ui;
 
 import java.io.File;
 import java.util.Locale;
@@ -27,7 +27,7 @@ import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.SystemHelper;
-import se.trixon.filebydate.Profile;
+import se.trixon.ttc.tools.fbd.Profile;
 
 /**
  *

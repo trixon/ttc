@@ -13,38 +13,28 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package se.trixon.filebydate;
+package se.trixon.ttc.tools.fbd;
 
 import java.util.ResourceBundle;
 import se.trixon.almond.util.SystemHelper;
-import se.trixon.filebydate.ui.fbd.FbdModule;
+import se.trixon.ttc.tools.fbd.ui.FbdModule;
 
 /**
  *
  * @author Patrik Karlström
  */
-public enum NameCase {
-    UNCHANGED, LOWER, UPPER;
+public enum DateSource {
+
+    EXIF_ORIGINAL,
+    FILE_CREATED,
+    FILE_MODIFIED;
     private final ResourceBundle mBundleUI = SystemHelper.getBundle(FbdModule.class, "Bundle");
 
-    public static NameCase getCase(String key) {
-        if (key != null) {
-            key = key.toLowerCase();
-            if (key.equalsIgnoreCase("l") || key.equalsIgnoreCase("lower")) {
-                return LOWER;
-            } else if (key.equalsIgnoreCase("u") || key.equalsIgnoreCase("upper")) {
-                return UPPER;
-            }
-        }
-
-        return null;
-    }
-
-    private NameCase() {
+    private DateSource() {
     }
 
     @Override
     public String toString() {
-        return mBundleUI.getString("case_" + name().toLowerCase());
+        return mBundleUI.getString("dateSource_" + name().toLowerCase());
     }
 }

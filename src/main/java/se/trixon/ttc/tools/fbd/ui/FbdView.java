@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package se.trixon.filebydate.ui.fbd;
+package se.trixon.ttc.tools.fbd.ui;
 
 import com.dlsc.workbenchfx.Workbench;
 import java.io.IOException;
@@ -61,13 +61,13 @@ import org.controlsfx.glyphfont.GlyphFontRegistry;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.SystemHelper;
 import se.trixon.almond.util.fx.FxHelper;
-import se.trixon.filebydate.NameCase;
-import se.trixon.filebydate.Operation;
-import se.trixon.filebydate.OperationListener;
-import se.trixon.filebydate.Options;
-import se.trixon.filebydate.Profile;
-import se.trixon.filebydate.ProfileManager;
-import se.trixon.filebydate.RunState;
+import se.trixon.ttc.tools.fbd.NameCase;
+import se.trixon.ttc.tools.fbd.Operation;
+import se.trixon.ttc.tools.fbd.OperationListener;
+import se.trixon.ttc.Options;
+import se.trixon.ttc.tools.fbd.Profile;
+import se.trixon.ttc.tools.fbd.ProfileManager;
+import se.trixon.ttc.RunState;
 
 /**
  *

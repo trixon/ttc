@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package se.trixon.filebydate.ui.fbd;
+package se.trixon.ttc.tools.fbd.ui;
 
 import com.dlsc.workbenchfx.Workbench;
 import com.dlsc.workbenchfx.model.WorkbenchModule;
@@ -23,8 +23,8 @@ import javafx.scene.Node;
 import javafx.scene.control.Tooltip;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.icons.material.MaterialIcon;
-import se.trixon.filebydate.RunState;
-import se.trixon.filebydate.ui.MainApp;
+import se.trixon.ttc.RunState;
+import se.trixon.ttc.MainApp;
 
 public class FbdModule extends WorkbenchModule {
 

@@ -2,10 +2,10 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>se.trixon</groupId>
-    <artifactId>filebydate</artifactId>
-    <version>2.0.1-SNAPSHOT</version>
+    <artifactId>ttc</artifactId>
+    <version>0.0.1-SNAPSHOT</version>
     <packaging>jar</packaging>
-    <name>filebydate</name>
+    <name>ttc</name>
     <description>A small collection of dainty tools</description>
     <url>https://trixon.se/</url>
     <properties>
@@ -101,7 +101,7 @@
                 <configuration>
                     <archive>
                         <manifest>
-                            <mainClass>se.trixon.filebydate.FileByDate</mainClass>
+                            <mainClass>se.trixon.ttc.MainApp</mainClass>
                         </manifest>
                     </archive>
                 </configuration>
@@ -181,7 +181,7 @@
                             <errTitle>Java not found</errTitle>
                             <chdir>.</chdir>
                             <priority>normal</priority>
-                            <downloadUrl>http://java.com/download</downloadUrl>
+                            <downloadUrl>https://www.azul.com/downloads/zulu-community/</downloadUrl>
                             <stayAlive>false</stayAlive>
                             <restartOnCrash>false</restartOnCrash>
                             <icon>${project.name}.ico</icon>

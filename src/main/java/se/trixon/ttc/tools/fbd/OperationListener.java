@@ -13,28 +13,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package se.trixon.filebydate;
-
-import java.util.ResourceBundle;
-import se.trixon.almond.util.SystemHelper;
-import se.trixon.filebydate.ui.fbd.FbdModule;
+package se.trixon.ttc.tools.fbd;
 
 /**
  *
  * @author Patrik Karlström
  */
-public enum DateSource {
+public interface OperationListener {
 
-    EXIF_ORIGINAL,
-    FILE_CREATED,
-    FILE_MODIFIED;
-    private final ResourceBundle mBundleUI = SystemHelper.getBundle(FbdModule.class, "Bundle");
+    void onOperationError(String message);
 
-    private DateSource() {
-    }
+    void onOperationFailed(String message);
 
-    @Override
-    public String toString() {
-        return mBundleUI.getString("dateSource_" + name().toLowerCase());
-    }
+    void onOperationFinished(String message, int fileCount);
+
+    void onOperationInterrupted();
+
+    void onOperationLog(String message);
+
+    void onOperationProcessingStarted();
+
+    void onOperationProgress(int value, int max);
+
+    void onOperationStarted();
 }

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package se.trixon.filebydate;
+package se.trixon.ttc.tools.fbd;
 
 import java.awt.GraphicsEnvironment;
 import java.io.ByteArrayOutputStream;
@@ -33,7 +33,7 @@ import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.PomInfo;
 import se.trixon.almond.util.SystemHelper;
 import se.trixon.almond.util.Xlog;
-import se.trixon.filebydate.ui.MainApp;
+import se.trixon.ttc.MainApp;
 
 /**
  *

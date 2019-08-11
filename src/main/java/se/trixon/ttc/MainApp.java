@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package se.trixon.filebydate.ui;
+package se.trixon.ttc;
 
 import com.dlsc.workbenchfx.Workbench;
 import com.dlsc.workbenchfx.view.controls.ToolbarItem;
@@ -50,9 +50,9 @@ import se.trixon.almond.util.fx.FxHelper;
 import se.trixon.almond.util.fx.control.LocaleComboBox;
 import se.trixon.almond.util.fx.dialogs.about.AboutPane;
 import se.trixon.almond.util.icons.material.MaterialIcon;
-import se.trixon.filebydate.FileByDate;
-import se.trixon.filebydate.Options;
-import se.trixon.filebydate.ui.fbd.FbdModule;
+import se.trixon.ttc.tools.fbd.FileByDate;
+import se.trixon.ttc.Options;
+import se.trixon.ttc.tools.fbd.ui.FbdModule;
 
 /**
  *

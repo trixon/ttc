@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package se.trixon.filebydate.ui.fbd;
+package se.trixon.ttc.tools.fbd.ui;
 
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -21,7 +21,7 @@ import javafx.scene.control.Label;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
-import se.trixon.filebydate.Profile;
+import se.trixon.ttc.tools.fbd.Profile;
 
 /**
  *
