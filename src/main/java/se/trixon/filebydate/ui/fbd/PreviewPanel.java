@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package se.trixon.filebydate.ui;
+package se.trixon.filebydate.ui.fbd;
 
 import java.io.File;
 import java.util.Locale;

@@ -15,26 +15,11 @@
  */
 package se.trixon.filebydate;
 
-import java.util.ResourceBundle;
-import se.trixon.almond.util.SystemHelper;
-import se.trixon.filebydate.ui.fbd.FbdModule;
-
 /**
  *
  * @author Patrik Karlström
  */
-public enum DateSource {
+public enum RunState {
+    STARTABLE, CANCELABLE, CLOSEABLE
 
-    EXIF_ORIGINAL,
-    FILE_CREATED,
-    FILE_MODIFIED;
-    private final ResourceBundle mBundleUI = SystemHelper.getBundle(FbdModule.class, "Bundle");
-
-    private DateSource() {
-    }
-
-    @Override
-    public String toString() {
-        return mBundleUI.getString("dateSource_" + name().toLowerCase());
-    }
 }
