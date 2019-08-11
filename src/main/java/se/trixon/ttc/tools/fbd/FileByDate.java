@@ -15,7 +15,6 @@
  */
 package se.trixon.ttc.tools.fbd;
 
-import java.awt.GraphicsEnvironment;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.PrintStream;
@@ -32,8 +31,6 @@ import org.apache.commons.cli.ParseException;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.PomInfo;
 import se.trixon.almond.util.SystemHelper;
-import se.trixon.almond.util.Xlog;
-import se.trixon.ttc.MainApp;
 
 /**
  *
@@ -80,7 +77,6 @@ public class FileByDate implements OperationListener {
 
         if (sArgs.length == 0) {
             System.out.println(sBundle.getString("hint_tui"));
-            displayGui();
         } else {
             if (mCommandLine.hasOption("help")) {
                 displayHelp();
@@ -100,8 +96,6 @@ public class FileByDate implements OperationListener {
                     profile.isValid();
                     System.out.println(profile.toDebugString());
                 }
-            } else if (mCommandLine.hasOption("gui")) {
-                displayGui();
             } else {
                 Profile profile = null;
 
@@ -162,19 +156,6 @@ public class FileByDate implements OperationListener {
 
     @Override
     public void onOperationStarted() {
-    }
-
-    private void displayGui() {
-        if (GraphicsEnvironment.isHeadless()) {
-            Xlog.timedErr(Dict.Dialog.ERROR_NO_GUI_IN_HEADLESS.toString());
-            System.exit(1);
-
-            return;
-        }
-
-        new Thread(() -> {
-            MainApp.main(sArgs);
-        }).start();
     }
 
     private void displayHelp() {

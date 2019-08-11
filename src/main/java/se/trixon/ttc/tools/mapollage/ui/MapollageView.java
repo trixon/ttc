@@ -16,7 +16,7 @@
 package se.trixon.ttc.tools.mapollage.ui;
 
 import com.dlsc.workbenchfx.Workbench;
-import com.dlsc.workbenchfx.model.WorkbenchDialog;
+import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
@@ -24,6 +24,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.LinkedList;
+import java.util.Optional;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -33,9 +34,12 @@ import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Button;
 import javafx.scene.control.ButtonBar;
 import javafx.scene.control.ButtonBase;
 import javafx.scene.control.ButtonType;
+import javafx.scene.control.DialogPane;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
@@ -48,6 +52,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontPosture;
 import javafx.scene.text.FontWeight;
+import javafx.stage.FileChooser;
 import javafx.util.Duration;
 import org.apache.commons.io.FileUtils;
 import org.controlsfx.control.action.Action;
@@ -58,14 +63,15 @@ import org.controlsfx.glyphfont.GlyphFontRegistry;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.SystemHelper;
 import se.trixon.almond.util.fx.FxHelper;
-import se.trixon.ttc.Options;
+import se.trixon.almond.util.fx.control.LogPanel;
+import se.trixon.almond.util.fx.dialogs.SimpleDialog;
+import static se.trixon.ttc.MainApp.ICON_SIZE_TOOLBAR;
 import se.trixon.ttc.RunState;
-import se.trixon.ttc.tools.fbd.NameCase;
-import se.trixon.ttc.tools.fbd.Operation;
-import se.trixon.ttc.tools.fbd.OperationListener;
-import se.trixon.ttc.tools.fbd.Profile;
-import se.trixon.ttc.tools.fbd.ProfileManager;
-import se.trixon.ttc.tools.fbd.ui.*;
+import se.trixon.ttc.tools.mapollage.Operation;
+import se.trixon.ttc.tools.mapollage.OperationListener;
+import se.trixon.ttc.tools.mapollage.Options;
+import se.trixon.ttc.tools.mapollage.ProfileManager;
+import se.trixon.ttc.tools.mapollage.profile.Profile;
 
 /**
  *
@@ -81,18 +87,19 @@ public class MapollageView extends BorderPane {
     private final GlyphFont mFontAwesome = GlyphFontRegistry.font("FontAwesome");
     private final Color mIconColor = Color.BLACK;
     private final ProfileIndicator mIndicator = new ProfileIndicator();
-    private final ObservableList<Profile> mItems = FXCollections.observableArrayList();
-    private Profile mLastRunProfile;
-    private ListView<Profile> mListView;
     private final MapollageModule mModule;
-    private OperationListener mOperationListener;
     private Thread mOperationThread;
     private final Options mOptions = Options.getInstance();
-    private PreviewPanel mPreviewPanel;
-    private final ProfileManager mProfileManager = ProfileManager.getInstance();
-    private LinkedList<Profile> mProfiles;
     private final ProgressPanel mProgressPanel = new ProgressPanel();
     private final Workbench mWorkbench;
+    private ListView<Profile> mListView;
+    private final ObservableList<Profile> mItems = FXCollections.observableArrayList();
+    private Button mOpenButton;
+    private File mDestination;
+    private OperationListener mOperationListener;
+    private Profile mLastRunProfile;
+    private final ProfileManager mProfileManager = ProfileManager.getInstance();
+    private LinkedList<Profile> mProfiles;
 
     public MapollageView(Workbench workbench, MapollageModule module) {
         mWorkbench = workbench;
@@ -101,86 +108,6 @@ public class MapollageView extends BorderPane {
         postInit();
         initListeners();
         mListView.requestFocus();
-    }
-
-    void doCancel() {
-        mOperationThread.interrupt();
-    }
-
-    void doNavHome() {
-        setCenter(mListView);
-    }
-
-    void doNavLog() {
-        setCenter(mProgressPanel);
-    }
-
-    void doRun() {
-        profileRun(mLastRunProfile);
-    }
-
-    void profileEdit(Profile profile) {
-        String title = Dict.EDIT.toString();
-        boolean addNew = false;
-        boolean clone = profile != null && profile.getName() == null;
-
-        if (profile == null) {
-            title = Dict.ADD.toString();
-            addNew = true;
-            profile = new Profile();
-            profile.setSourceDir(FileUtils.getUserDirectory());
-            profile.setDestDir(FileUtils.getUserDirectory());
-            profile.setFilePattern("{*.jpg,*.JPG}");
-            profile.setDatePattern("yyyy/MM/yyyy-MM-dd");
-            profile.setOperation(0);
-            profile.setFollowLinks(true);
-            profile.setRecursive(true);
-            profile.setReplaceExisting(false);
-            profile.setCaseBase(NameCase.UNCHANGED);
-            profile.setCaseExt(NameCase.UNCHANGED);
-        } else if (clone) {
-            title = Dict.CLONE.toString();
-            profile.setLastRun(0);
-        }
-
-////        ProfilePanel profilePanel = new ProfilePanel(profile);
-//
-//        final boolean add = addNew;
-//        final Profile p = profile;
-//        WorkbenchDialog dialog = WorkbenchDialog.builder(title, profilePanel, ButtonType.CANCEL, ButtonType.OK).onResult(buttonType -> {
-//            if (buttonType == ButtonType.OK) {
-//                profilePanel.save();
-//                if (add || clone) {
-//                    mProfiles.add(p);
-//                }
-//
-//                profilesSave();
-//                populateProfiles(p);
-//            }
-//        }).build();
-//
-//        dialog.setOnShown(event -> {
-//            profilePanel.setOkButton(dialog.getButton(ButtonType.OK).get());
-//        });
-//
-//        mWorkbench.showDialog(dialog);
-    }
-
-    private void createUI() {
-        mDefaultFont = Font.getDefault();
-
-        mListView = new ListView<>();
-        mListView.setItems(mItems);
-        mListView.setCellFactory((ListView<Profile> param) -> new ProfileListCell());
-        Label welcomeLabel = new Label(mBundle.getString("welcome"));
-        welcomeLabel.setFont(Font.font(mDefaultFont.getName(), FontPosture.ITALIC, 18));
-
-        mListView.setPlaceholder(welcomeLabel);
-
-        mPreviewPanel = new PreviewPanel();
-
-        setCenter(mListView);
-        setBottom(mPreviewPanel);
     }
 
     private void initListeners() {
@@ -199,12 +126,18 @@ public class MapollageView extends BorderPane {
             }
 
             @Override
-            public void onOperationFinished(String message, int fileCount) {
+            public void onOperationFinished(String message, int placemarkCount) {
                 mModule.setRunningState(RunState.CLOSEABLE);
-                mProgressPanel.out(Dict.DONE.toString());
-                populateProfiles(mLastRunProfile);
+                mProgressPanel.out(message);
 
-                if (0 == fileCount) {
+                if (mSuccess && placemarkCount > 0) {
+                    mOpenButton.setDisable(false);
+                    populateProfiles(mLastRunProfile);
+
+                    if (mOptions.isAutoOpen()) {
+                        SystemHelper.desktopOpen(mDestination);
+                    }
+                } else if (0 == placemarkCount) {
                     mProgressPanel.setProgress(1);
                 }
             }
@@ -227,6 +160,11 @@ public class MapollageView extends BorderPane {
             }
 
             @Override
+            public void onOperationProgress(String message) {
+                //TODO Display message on progress bar
+            }
+
+            @Override
             public void onOperationProgress(int value, int max) {
                 mProgressPanel.setProgress(value / (double) max);
             }
@@ -234,27 +172,27 @@ public class MapollageView extends BorderPane {
             @Override
             public void onOperationStarted() {
                 mModule.setRunningState(RunState.CANCELABLE);
+                mOpenButton.setDisable(true);
                 mProgressPanel.setProgress(0);
                 mSuccess = true;
             }
         };
-
     }
 
-    private void populateProfiles(Profile profile) {
-        mItems.clear();
-        Collections.sort(mProfiles);
+    void doCancel() {
+        mOperationThread.interrupt();
+    }
 
-        mProfiles.stream().forEach((item) -> {
-            mItems.add(item);
-        });
+    void doNavHome() {
+        setCenter(mListView);
+    }
 
-        if (profile != null) {
-            mListView.getSelectionModel().select(profile);
-            mListView.scrollTo(profile);
-        }
+    void doNavLog() {
+        setCenter(mProgressPanel);
+    }
 
-        mPreviewPanel.setVisible(!mListView.getSelectionModel().isEmpty());
+    void doRun() {
+        //profileRun(mLastRunProfile);
     }
 
     private void postInit() {
@@ -262,58 +200,86 @@ public class MapollageView extends BorderPane {
         populateProfiles(null);
     }
 
+    private void populateProfiles(Profile profile) {
+        mItems.clear();
+        Collections.sort(mProfiles);
+
+        mProfiles.stream().forEachOrdered((item) -> {
+            mItems.add(item);
+        });
+
+        if (profile != null) {
+            mListView.getSelectionModel().select(profile);
+            mListView.scrollTo(profile);
+        }
+    }
+
+    void profileEdit(Profile profile) {
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.initOwner(null);
+        String title = Dict.EDIT.toString();
+        boolean addNew = false;
+        boolean clone = profile != null && profile.getName() == null;
+
+        if (profile == null) {
+            title = Dict.ADD.toString();
+            addNew = true;
+            profile = new Profile();
+        } else if (clone) {
+            title = Dict.CLONE.toString();
+            profile.setLastRun(0);
+        }
+
+        alert.setTitle(title);
+        alert.setGraphic(null);
+        alert.setHeaderText(null);
+        alert.setResizable(true);
+
+        ProfilePanel profilePanel = new ProfilePanel(profile);
+
+        final DialogPane dialogPane = alert.getDialogPane();
+        dialogPane.setContent(profilePanel);
+        profilePanel.setOkButton((Button) dialogPane.lookupButton(ButtonType.OK));
+
+        Optional<ButtonType> result = FxHelper.showAndWait(alert, null);
+        if (result.get() == ButtonType.OK) {
+            profilePanel.save();
+            if (addNew || clone) {
+                mProfiles.add(profile);
+            }
+
+            profilesSave();
+            populateProfiles(profile);
+        }
+    }
+
     private void profileRemove(Profile profile) {
-        String title = Dict.Dialog.TITLE_PROFILE_REMOVE.toString() + "?";
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.initOwner(null);
+        alert.setTitle(Dict.Dialog.TITLE_PROFILE_REMOVE.toString() + "?");
         String message = String.format(Dict.Dialog.MESSAGE_PROFILE_REMOVE.toString(), profile.getName());
+        alert.setHeaderText(message);
 
         ButtonType removeButtonType = new ButtonType(Dict.REMOVE.toString(), ButtonBar.ButtonData.OK_DONE);
         ButtonType cancelButtonType = new ButtonType(Dict.CANCEL.toString(), ButtonBar.ButtonData.CANCEL_CLOSE);
+        alert.getButtonTypes().setAll(removeButtonType, cancelButtonType);
 
-        WorkbenchDialog dialog = WorkbenchDialog.builder(title, message, removeButtonType, cancelButtonType).onResult(buttonType -> {
-            if (buttonType == removeButtonType) {
-                mProfiles.remove(profile);
-                profilesSave();
-                populateProfiles(null);
-//            mLogAction.setDisabled(mItems.isEmpty() || mLastRunProfile == null);//TODO Restore 2019-08-10
-            }
-        }).build();
-        mWorkbench.showDialog(dialog);
+        Optional<ButtonType> result = FxHelper.showAndWait(alert, null);
+        if (result.get() == removeButtonType) {
+            mProfiles.remove(profile);
+            profilesSave();
+            populateProfiles(null);
+            //mLogAction.setDisabled(mItems.isEmpty() || mLastRunProfile == null); //TODO 2019-08-11
+        }
     }
 
     private void profileRun(Profile profile) {
-        PreviewPanel previewPanel = new PreviewPanel();
-        previewPanel.load(profile);
-
-        ButtonType runButtonType = new ButtonType(Dict.RUN.toString());
-        ButtonType dryRunButtonType = new ButtonType(Dict.DRY_RUN.toString(), ButtonBar.ButtonData.OK_DONE);
-        ButtonType cancelButtonType = new ButtonType(Dict.CANCEL.toString(), ButtonBar.ButtonData.CANCEL_CLOSE);
-
-        String title = String.format(Dict.Dialog.TITLE_PROFILE_RUN.toString(), profile.getName());
-
-        WorkbenchDialog dialog = WorkbenchDialog.builder(title, previewPanel, runButtonType, dryRunButtonType, cancelButtonType).onResult(buttonType -> {
-            if (buttonType != cancelButtonType) {
-                boolean dryRun = buttonType == dryRunButtonType;
-                profile.setDryRun(dryRun);
-                mProgressPanel.clear();
-                setCenter(mProgressPanel);
-//                mIndicator.setProfile(profile);
-
-                if (profile.isValid()) {
-                    mLastRunProfile = profile;
-                    mOperationThread = new Thread(() -> {
-                        Operation operation = new Operation(mOperationListener, profile);
-                        operation.start();
-                    });
-                    mOperationThread.setName("Operation");
-                    mOperationThread.start();
-                } else {
-                    mProgressPanel.out(profile.toDebugString());
-                    mProgressPanel.out(profile.getValidationError());
-                    mProgressPanel.out(Dict.ABORTING.toString());
-                }
-            }
-        }).build();
-        mWorkbench.showDialog(dialog);
+        if (profile.isValid()) {
+            requestKmlFileObject(profile);
+        } else {
+            mProgressPanel.clear();
+            mProgressPanel.out(profile.getValidationError());
+        }
     }
 
     private void profilesLoad() {
@@ -325,12 +291,68 @@ public class MapollageView extends BorderPane {
         }
     }
 
-    private void profilesSave() {
+    void profilesSave() {
         try {
             mProfileManager.save();
         } catch (IOException ex) {
             LOGGER.log(Level.SEVERE, null, ex);
         }
+    }
+
+    private void requestKmlFileObject(Profile profile) {
+        FileChooser.ExtensionFilter filter = new FileChooser.ExtensionFilter("Keyhole Markup Language (*.kml)", "*.kml");
+        SimpleDialog.clearFilters();
+        SimpleDialog.addFilter(new FileChooser.ExtensionFilter(Dict.ALL_FILES.toString(), "*"));
+        SimpleDialog.addFilter(filter);
+        SimpleDialog.setFilter(filter);
+        SimpleDialog.setOwner(null);
+        SimpleDialog.setTitle(String.format("%s %s", Dict.SAVE.toString(), profile.getName()));
+
+        if (mDestination == null) {
+            SimpleDialog.setPath(FileUtils.getUserDirectory());
+        } else {
+            SimpleDialog.setPath(mDestination.getParentFile());
+            SimpleDialog.setSelectedFile(new File(""));
+        }
+
+        if (SimpleDialog.saveFile(new String[]{"kml"})) {
+            mDestination = SimpleDialog.getPath();
+            profile.setDestinationFile(mDestination);
+            profile.isValid();
+
+            if (profile.hasValidRelativeSourceDest()) {
+                mProgressPanel.clear();
+                setCenter(mProgressPanel);
+                mIndicator.setProfile(profile);
+                mLastRunProfile = profile;
+
+                Operation operation = new Operation(mOperationListener, profile);
+                mOperationThread = new Thread(operation);
+                mOperationThread.start();
+            } else {
+                mProgressPanel.out(mBundle.getString("invalid_relative_source_dest"));
+                mProgressPanel.out(Dict.ABORTING.toString());
+            }
+        }
+    }
+
+    private void createUI() {
+        mDefaultFont = Font.getDefault();
+
+        mListView = new ListView<>();
+        mListView.setItems(mItems);
+        mListView.setCellFactory((ListView<Profile> param) -> new ProfileListCell());
+        Label welcomeLabel = new Label(mBundle.getString("welcome"));
+        welcomeLabel.setFont(Font.font(mDefaultFont.getName(), FontPosture.ITALIC, 18));
+
+        mOpenButton = mProgressPanel.getOpenButton();
+        mOpenButton.setOnAction((ActionEvent event) -> {
+            SystemHelper.desktopOpen(mDestination);
+        });
+
+        mOpenButton.setGraphic(mFontAwesome.create(FontAwesome.Glyph.GLOBE).size(ICON_SIZE_TOOLBAR / 2).color(mIconColor));
+        mListView.setPlaceholder(welcomeLabel);
+        setCenter(mListView);
     }
 
     class ProfileListCell extends ListCell<Profile> {
@@ -356,11 +378,22 @@ public class MapollageView extends BorderPane {
             createUI();
         }
 
+        @Override
+        protected void updateItem(Profile profile, boolean empty) {
+            super.updateItem(profile, empty);
+
+            if (profile == null || empty) {
+                clearContent();
+            } else {
+                addContent(profile);
+            }
+        }
+
         private void addContent(Profile profile) {
             setText(null);
 
             mNameLabel.setText(profile.getName());
-            mDescLabel.setText(profile.getDescription());
+            mDescLabel.setText(profile.getDescriptionString());
             String lastRun = "-";
             if (profile.getLastRun() != 0) {
                 lastRun = mSimpleDateFormat.format(new Date(profile.getLastRun()));
@@ -379,15 +412,21 @@ public class MapollageView extends BorderPane {
             String fontFamily = mDefaultFont.getFamily();
             double fontSize = mDefaultFont.getSize();
 
-            mNameLabel.setFont(Font.font(fontFamily, FontWeight.BOLD, fontSize * 2));
-            mDescLabel.setFont(Font.font(fontFamily, FontWeight.NORMAL, fontSize * 1.3));
-            mLastLabel.setFont(Font.font(fontFamily, FontWeight.NORMAL, fontSize * 1.3));
+            mNameLabel.setFont(Font.font(fontFamily, FontWeight.BOLD, fontSize * 1.4));
+            mDescLabel.setFont(Font.font(fontFamily, FontWeight.NORMAL, fontSize * 1.1));
+            mLastLabel.setFont(Font.font(fontFamily, FontWeight.NORMAL, fontSize * 1.1));
 
             Action runAction = new Action(Dict.RUN.toString(), (ActionEvent event) -> {
                 profileRun(getSelectedProfile());
                 mListView.requestFocus();
             });
             runAction.setGraphic(mFontAwesome.create(FontAwesome.Glyph.PLAY).size(ICON_SIZE_PROFILE).color(mIconColor));
+
+            Action infoAction = new Action(Dict.INFORMATION.toString(), (ActionEvent event) -> {
+                profileInfo(getSelectedProfile());
+                mListView.requestFocus();
+            });
+            infoAction.setGraphic(mFontAwesome.create(FontAwesome.Glyph.INFO).size(ICON_SIZE_PROFILE).color(mIconColor));
 
             Action editAction = new Action(Dict.EDIT.toString(), (ActionEvent event) -> {
                 profileEdit(getSelectedProfile());
@@ -414,12 +453,14 @@ public class MapollageView extends BorderPane {
                     runAction,
                     editAction,
                     cloneAction,
+                    infoAction,
                     removeAction
             );
 
             ToolBar toolBar = ActionUtils.createToolBar(actions, ActionUtils.ActionTextBehavior.HIDE);
             toolBar.setBackground(Background.EMPTY);
             toolBar.setVisible(false);
+            toolBar.setStyle("-fx-spacing: 0px;");
             FxHelper.adjustButtonWidth(toolBar.getItems().stream(), ICON_SIZE_PROFILE * 1.8);
 
             toolBar.getItems().stream().filter((item) -> (item instanceof ButtonBase))
@@ -441,7 +482,6 @@ public class MapollageView extends BorderPane {
                 }
 
                 selectListItem();
-                mPreviewPanel.load(getSelectedProfile());
                 mFadeInTransition.playFromStart();
             });
 
@@ -460,21 +500,29 @@ public class MapollageView extends BorderPane {
             profileEdit(p);
         }
 
+        private void profileInfo(Profile profile) {
+            String title = Dict.INFORMATION.toString();
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.initOwner(null);
+
+            alert.setTitle(title);
+            alert.setHeaderText(String.format("%s\n%s", profile.getName(), profile.getDescriptionString()));
+            alert.setResizable(true);
+            LogPanel logPanel = new LogPanel(profile.toInfoString());
+            logPanel.setFont(Font.font("monospaced"));
+            logPanel.setPrefSize(800, 800);
+
+            final DialogPane dialogPane = alert.getDialogPane();
+            dialogPane.setContent(logPanel);
+
+            FxHelper.showAndWait(alert, null);
+        }
+
         private void selectListItem() {
             mListView.getSelectionModel().select(this.getIndex());
             mListView.requestFocus();
         }
 
-        @Override
-        protected void updateItem(Profile profile, boolean empty) {
-            super.updateItem(profile, empty);
-
-            if (profile == null || empty) {
-                clearContent();
-            } else {
-                addContent(profile);
-            }
-        }
     }
 
 }

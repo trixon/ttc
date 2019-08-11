@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright 2019 Patrik Karlström.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -42,7 +42,7 @@ import se.trixon.ttc.tools.mapollage.Options;
  */
 public class ProgressPanel extends BorderPane {
 
-    private final ResourceBundle mBundle = SystemHelper.getBundle(MainApp.class, "Bundle");
+    private final ResourceBundle mBundle = SystemHelper.getBundle(ProgressPanel.class, "Bundle");
     private final CheckBox mCheckBox = new CheckBox(mBundle.getString("ProgressPanel.autoOpenCheckBox"));
     private final Tab mErrTab = new Tab(Dict.Dialog.ERROR.toString());
     private final LogPanel mLogErrPanel = new LogPanel();

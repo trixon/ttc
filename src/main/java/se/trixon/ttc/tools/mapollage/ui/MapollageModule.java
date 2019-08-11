@@ -47,6 +47,12 @@ public class MapollageModule extends WorkbenchModule {
     }
 
     @Override
+    public boolean destroy() {
+        mMapollageView.profilesSave();
+        return super.destroy();
+    }
+
+    @Override
     public void init(Workbench workbench) {
         super.init(workbench);
         mMapollageView = new MapollageView(workbench, this);

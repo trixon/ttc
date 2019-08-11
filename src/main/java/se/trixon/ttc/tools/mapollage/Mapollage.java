@@ -15,7 +15,6 @@
  */
 package se.trixon.ttc.tools.mapollage;
 
-import java.awt.GraphicsEnvironment;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
@@ -34,9 +33,7 @@ import org.apache.commons.lang3.SystemUtils;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.PomInfo;
 import se.trixon.almond.util.SystemHelper;
-import se.trixon.almond.util.Xlog;
 import se.trixon.ttc.tools.mapollage.profile.Profile;
-import se.trixon.ttc.tools.mapollage.ui.MainApp;
 
 /**
  *
@@ -84,7 +81,6 @@ public class Mapollage implements OperationListener {
         initOptions();
         if (sArgs.length == 0) {
             System.out.println(sBundle.getString("hint_tui"));
-            displayGui();
         } else {
             try {
                 CommandLineParser commandLineParser = new DefaultParser();
@@ -108,8 +104,6 @@ public class Mapollage implements OperationListener {
                         profile.isValid();
                         System.out.println(profile.toDebugString());
                     }
-                } else if (commandLine.hasOption("gui")) {
-                    displayGui();
                 } else {
                     Profile profile = null;
 
@@ -201,19 +195,6 @@ public class Mapollage implements OperationListener {
         // nvm
     }
 
-    private void displayGui() {
-        if (GraphicsEnvironment.isHeadless()) {
-            Xlog.timedErr(Dict.Dialog.ERROR_NO_GUI_IN_HEADLESS.toString());
-            System.exit(1);
-
-            return;
-        }
-
-        new Thread(() -> {
-            MainApp.main(sArgs);
-        }).start();
-    }
-
     private void displayHelp() {
         System.out.println(getHelp());
     }
@@ -243,11 +224,6 @@ public class Mapollage implements OperationListener {
         Option version = Option.builder("v")
                 .longOpt(VERSION)
                 .desc(sBundle.getString("opt_version_desc"))
-                .build();
-
-        Option gui = Option.builder("g")
-                .longOpt("gui")
-                .desc(sBundle.getString("opt_gui_desc"))
                 .build();
 
         Option profile = Option.builder("rp")
