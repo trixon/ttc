@@ -103,7 +103,7 @@ public class MainApp extends Application {
         mStage.show();
         initAccelerators();
 
-        //mWorkbench.openModule(mFbdModule);
+        mWorkbench.openModule(mMapollageModule);
     }
 
     private void createUI() {

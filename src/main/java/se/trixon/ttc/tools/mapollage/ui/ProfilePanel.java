@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright 2019 Patrik Karlström.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -109,7 +109,9 @@ public class ProfilePanel extends TabPane {
         });
 
         mValidationSupport.validationResultProperty().addListener((ObservableValue<? extends ValidationResult> observable, ValidationResult oldValue, ValidationResult newValue) -> {
-            mOkButton.setDisable(mValidationSupport.isInvalid());
+            if (mOkButton != null) {
+                mOkButton.setDisable(mValidationSupport.isInvalid());
+            }
         });
 
         mValidationSupport.initInitialDecoration();
