@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright 2019 Patrik Karlström.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -34,9 +34,10 @@ import javafx.scene.control.Tooltip;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import org.apache.commons.lang3.StringUtils;
-import org.controlsfx.glyphfont.FontAwesome;
 import org.controlsfx.validation.Validator;
 import se.trixon.almond.util.Dict;
+import se.trixon.almond.util.icons.material.MaterialIcon;
+import static se.trixon.ttc.MainApp.ICON_SIZE_PROFILE;
 import se.trixon.ttc.tools.mapollage.profile.Profile;
 import se.trixon.ttc.tools.mapollage.profile.ProfileFolder;
 import se.trixon.ttc.tools.mapollage.profile.ProfileFolder.FolderBy;
@@ -61,7 +62,7 @@ public class FoldersTab extends BaseTab {
 
     public FoldersTab(Profile profile) {
         setText(Dict.FOLDERS.toString());
-        setGraphic(FontAwesome.Glyph.FOLDER_ALT.getChar());
+        setGraphic(MaterialIcon._File.FOLDER_OPEN.getImageView(ICON_SIZE_PROFILE));
         mProfile = profile;
         createUI();
         initValidation();

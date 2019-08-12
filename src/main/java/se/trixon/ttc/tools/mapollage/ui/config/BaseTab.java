@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright 2019 Patrik Karlström.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -23,9 +23,6 @@ import javafx.scene.control.Tab;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Region;
 import javafx.scene.paint.Color;
-import org.controlsfx.glyphfont.Glyph;
-import org.controlsfx.glyphfont.GlyphFont;
-import org.controlsfx.glyphfont.GlyphFontRegistry;
 import org.controlsfx.validation.ValidationSupport;
 import se.trixon.almond.util.SystemHelper;
 import se.trixon.ttc.tools.mapollage.Options;
@@ -41,7 +38,6 @@ public abstract class BaseTab extends Tab {
     public static final int ICON_SIZE = 32;
     public static final String MULTILINE_DIVIDER = "* * * * *";
     protected static ValidationSupport sValidationSupport;
-    private final GlyphFont mFontAwesome = GlyphFontRegistry.font("FontAwesome");
     private final Color mIconColor = Color.BLACK;
     private final Insets mTopInsets = new Insets(8, 0, 0, 0);
     protected final ResourceBundle mBundle = SystemHelper.getBundle(BaseTab.class, "Bundle");
@@ -105,11 +101,4 @@ public abstract class BaseTab extends Tab {
             sb.append(mHeaderPrefix).append(string).append("\n");
         }
     }
-
-    protected void setGraphic(char c) {
-        Glyph g = mFontAwesome.create(c).size(ICON_SIZE).color(mIconColor);
-        g.setPadding(new Insets(8));
-        setGraphic(g);
-    }
-
 }

@@ -135,7 +135,7 @@ public class FbdModule extends WorkbenchModule {
                     mView.doRun();
                 }
         );
-        mRunToolbarItem.setTooltip(new Tooltip(Dict.START.toString()));
+        mRunToolbarItem.setTooltip(new Tooltip(Dict.RUN.toString()));
 
         mCancelToolbarItem = new ToolbarItem(
                 MaterialIcon._Navigation.CANCEL.getImageView(MainApp.ICON_SIZE_TOOLBAR),

@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright 2019 Patrik Karlström.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -25,9 +25,10 @@ import javafx.scene.control.ToggleGroup;
 import javafx.scene.control.Tooltip;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Priority;
-import org.controlsfx.glyphfont.FontAwesome;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.fx.FxHelper;
+import se.trixon.almond.util.icons.material.MaterialIcon;
+import static se.trixon.ttc.MainApp.ICON_SIZE_PROFILE;
 import se.trixon.ttc.tools.mapollage.profile.Profile;
 import se.trixon.ttc.tools.mapollage.profile.ProfilePhoto;
 
@@ -51,7 +52,7 @@ public class PhotoTab extends BaseTab {
 
     public PhotoTab(Profile profile) {
         setText(Dict.PHOTO.toString());
-        setGraphic(FontAwesome.Glyph.IMAGE.getChar());
+        setGraphic(MaterialIcon._Image.PHOTO.getImageView(ICON_SIZE_PROFILE));
         mProfile = profile;
         createUI();
         load();

@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright 2019 Patrik Karlström.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -22,9 +22,10 @@ import javafx.scene.control.Spinner;
 import javafx.scene.control.Toggle;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.layout.VBox;
-import org.controlsfx.glyphfont.FontAwesome;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.fx.FxHelper;
+import se.trixon.almond.util.icons.material.MaterialIcon;
+import static se.trixon.ttc.MainApp.ICON_SIZE_PROFILE;
 import se.trixon.ttc.tools.mapollage.profile.Profile;
 import se.trixon.ttc.tools.mapollage.profile.ProfilePath;
 import se.trixon.ttc.tools.mapollage.profile.ProfilePath.SplitBy;
@@ -48,7 +49,7 @@ public class PathTab extends BaseTab {
 
     public PathTab(Profile profile) {
         setText(Dict.PATH_GFX.toString());
-        setGraphic(FontAwesome.Glyph.CODE_FORK.getChar());
+        setGraphic(MaterialIcon._Action.TIMELINE.getImageView(ICON_SIZE_PROFILE));
         mProfile = profile;
         createUI();
         load();

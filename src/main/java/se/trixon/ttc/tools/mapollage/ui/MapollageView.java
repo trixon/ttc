@@ -46,7 +46,6 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
-import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontPosture;
 import javafx.scene.text.FontWeight;
@@ -55,14 +54,12 @@ import javafx.util.Duration;
 import org.apache.commons.io.FileUtils;
 import org.controlsfx.control.action.Action;
 import org.controlsfx.control.action.ActionUtils;
-import org.controlsfx.glyphfont.FontAwesome;
-import org.controlsfx.glyphfont.GlyphFont;
-import org.controlsfx.glyphfont.GlyphFontRegistry;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.SystemHelper;
 import se.trixon.almond.util.fx.FxHelper;
 import se.trixon.almond.util.fx.control.LogPanel;
 import se.trixon.almond.util.fx.dialogs.SimpleDialog;
+import se.trixon.almond.util.icons.material.MaterialIcon;
 import static se.trixon.ttc.MainApp.ICON_SIZE_PROFILE;
 import static se.trixon.ttc.MainApp.ICON_SIZE_TOOLBAR;
 import se.trixon.ttc.RunState;
@@ -82,8 +79,6 @@ public class MapollageView extends BorderPane {
 
     private final ResourceBundle mBundle = SystemHelper.getBundle(MapollageView.class, "Bundle");
     private Font mDefaultFont;
-    private final GlyphFont mFontAwesome = GlyphFontRegistry.font("FontAwesome");
-    private final Color mIconColor = Color.BLACK;
     private final ProfileIndicator mIndicator = new ProfileIndicator();
     private final MapollageModule mModule;
     private Thread mOperationThread;
@@ -343,7 +338,7 @@ public class MapollageView extends BorderPane {
             SystemHelper.desktopOpen(mDestination);
         });
 
-        mOpenButton.setGraphic(mFontAwesome.create(FontAwesome.Glyph.GLOBE).size(ICON_SIZE_TOOLBAR / 2).color(mIconColor));
+        mOpenButton.setGraphic(MaterialIcon._Social.PUBL.getImageView(ICON_SIZE_TOOLBAR / 2));
         mListView.setPlaceholder(welcomeLabel);
         setCenter(mListView);
     }
@@ -413,31 +408,31 @@ public class MapollageView extends BorderPane {
                 profileRun(getSelectedProfile());
                 mListView.requestFocus();
             });
-            runAction.setGraphic(mFontAwesome.create(FontAwesome.Glyph.PLAY).size(ICON_SIZE_PROFILE).color(mIconColor));
+            runAction.setGraphic(MaterialIcon._Av.PLAY_ARROW.getImageView(ICON_SIZE_PROFILE));
 
             Action infoAction = new Action(Dict.INFORMATION.toString(), (ActionEvent event) -> {
                 profileInfo(getSelectedProfile());
                 mListView.requestFocus();
             });
-            infoAction.setGraphic(mFontAwesome.create(FontAwesome.Glyph.INFO).size(ICON_SIZE_PROFILE).color(mIconColor));
+            infoAction.setGraphic(MaterialIcon._Action.INFO_OUTLINE.getImageView(ICON_SIZE_PROFILE));
 
             Action editAction = new Action(Dict.EDIT.toString(), (ActionEvent event) -> {
                 profileEdit(getSelectedProfile());
                 mListView.requestFocus();
             });
-            editAction.setGraphic(mFontAwesome.create(FontAwesome.Glyph.EDIT).size(ICON_SIZE_PROFILE).color(mIconColor));
+            editAction.setGraphic(MaterialIcon._Image.EDIT.getImageView(ICON_SIZE_PROFILE));
 
             Action cloneAction = new Action(Dict.CLONE.toString(), (ActionEvent event) -> {
                 profileClone();
                 mListView.requestFocus();
             });
-            cloneAction.setGraphic(mFontAwesome.create(FontAwesome.Glyph.COPY).size(ICON_SIZE_PROFILE).color(mIconColor));
+            cloneAction.setGraphic(MaterialIcon._Content.CONTENT_COPY.getImageView(ICON_SIZE_PROFILE));
 
             Action removeAction = new Action(Dict.REMOVE.toString(), (ActionEvent event) -> {
                 profileRemove(getSelectedProfile());
                 mListView.requestFocus();
             });
-            removeAction.setGraphic(mFontAwesome.create(FontAwesome.Glyph.TRASH).size(ICON_SIZE_PROFILE).color(mIconColor));
+            removeAction.setGraphic(MaterialIcon._Content.REMOVE.getImageView(ICON_SIZE_PROFILE));
 
             VBox mainBox = new VBox(mNameLabel, mDescLabel, mLastLabel);
             mainBox.setAlignment(Pos.CENTER_LEFT);

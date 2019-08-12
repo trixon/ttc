@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright 2019 Patrik Karlström.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -26,9 +26,10 @@ import javafx.scene.control.Spinner;
 import javafx.scene.control.Toggle;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.layout.VBox;
-import org.controlsfx.glyphfont.FontAwesome;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.fx.FxHelper;
+import se.trixon.almond.util.icons.material.MaterialIcon;
+import static se.trixon.ttc.MainApp.ICON_SIZE_PROFILE;
 import se.trixon.ttc.tools.mapollage.profile.Profile;
 import se.trixon.ttc.tools.mapollage.profile.ProfilePlacemark;
 import se.trixon.ttc.tools.mapollage.profile.ProfilePlacemark.NameBy;
@@ -54,7 +55,7 @@ public class PlacemarkTab extends BaseTab {
 
     public PlacemarkTab(Profile profile) {
         setText(Dict.PLACEMARK.toString());
-        setGraphic(FontAwesome.Glyph.MAP_MARKER.getChar());
+        setGraphic(MaterialIcon._Maps.PLACE.getImageView(ICON_SIZE_PROFILE));
         mProfile = profile;
         createUI();
         load();
