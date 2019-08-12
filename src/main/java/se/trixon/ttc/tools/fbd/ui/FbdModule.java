@@ -30,12 +30,11 @@ public class FbdModule extends WorkbenchModule {
 
     private ToolbarItem mAddToolbarItem;
     private ToolbarItem mCancelToolbarItem;
-
-    private FbdView mFbdView;
     private boolean mFirstRun = true;
     private ToolbarItem mHomeToolbarItem;
     private ToolbarItem mLogToolbarItem;
     private ToolbarItem mRunToolbarItem;
+    private FbdView mView;
 
     public FbdModule() {
         super("FileByDate", MaterialIcon._Action.DATE_RANGE.getImageView(MainApp.MODULE_ICON_SIZE).getImage());
@@ -43,13 +42,13 @@ public class FbdModule extends WorkbenchModule {
 
     @Override
     public Node activate() {
-        return mFbdView;
+        return mView;
     }
 
     @Override
     public void init(Workbench workbench) {
         super.init(workbench);
-        mFbdView = new FbdView(workbench, this);
+        mView = new FbdView(workbench, this);
         if (mFirstRun) {
             initToolbar();
             mFirstRun = false;
@@ -64,6 +63,9 @@ public class FbdModule extends WorkbenchModule {
                 case STARTABLE:
                     getToolbarControlsLeft().setAll(
                             mLogToolbarItem
+                    );
+                    getToolbarControlsRight().setAll(
+                            mAddToolbarItem
                     );
 
 //                mOptionsAction.setDisabled(false);
@@ -105,7 +107,7 @@ public class FbdModule extends WorkbenchModule {
                 event -> {
                     mLogToolbarItem.setDisable(false);
                     setRunningState(RunState.STARTABLE);
-                    mFbdView.doNavHome();
+                    mView.doNavHome();
                 }
         );
         mHomeToolbarItem.setTooltip(new Tooltip(Dict.LIST.toString()));
@@ -114,24 +116,23 @@ public class FbdModule extends WorkbenchModule {
                 MaterialIcon._Editor.FORMAT_ALIGN_LEFT.getImageView(MainApp.ICON_SIZE_TOOLBAR),
                 event -> {
                     setRunningState(RunState.CLOSEABLE);
-                    mFbdView.doNavLog();
+                    mView.doNavLog();
                 }
         );
         mLogToolbarItem.setTooltip(new Tooltip(Dict.OUTPUT.toString()));
         mLogToolbarItem.setDisable(true);
 
-        mAddToolbarItem = new ToolbarItem(
+        mAddToolbarItem = new ToolbarItem(Dict.ADD.toString(),
                 MaterialIcon._Content.ADD.getImageView(MainApp.ICON_SIZE_TOOLBAR),
                 event -> {
-                    mFbdView.profileEdit(null);
+                    mView.profileEdit(null);
                 }
         );
-        mAddToolbarItem.setTooltip(new Tooltip(Dict.ADD.toString()));
 
         mRunToolbarItem = new ToolbarItem(
                 MaterialIcon._Av.PLAY_ARROW.getImageView(MainApp.ICON_SIZE_TOOLBAR),
                 event -> {
-                    mFbdView.doRun();
+                    mView.doRun();
                 }
         );
         mRunToolbarItem.setTooltip(new Tooltip(Dict.START.toString()));
@@ -139,7 +140,7 @@ public class FbdModule extends WorkbenchModule {
         mCancelToolbarItem = new ToolbarItem(
                 MaterialIcon._Navigation.CANCEL.getImageView(MainApp.ICON_SIZE_TOOLBAR),
                 event -> {
-                    mFbdView.doCancel();
+                    mView.doCancel();
                 }
         );
         mCancelToolbarItem.setTooltip(new Tooltip(Dict.CANCEL.toString()));

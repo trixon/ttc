@@ -66,14 +66,15 @@ import se.trixon.ttc.tools.mapollage.ui.MapollageModule;
 public class MainApp extends Application {
 
     public static final String APP_TITLE = "Trixon Tool Collection";
+    public static final int ICON_SIZE_PROFILE = 32;
     public static final int ICON_SIZE_TOOLBAR = 40;
     public static final int ICON_SIZE_DRAWER = ICON_SIZE_TOOLBAR / 2;
     public static final int MODULE_ICON_SIZE = 32;
     private static final boolean IS_MAC = SystemUtils.IS_OS_MAC;
-    private FbdModule mFbdModule;
     private Action mAboutAction;
     private Action mAboutDateFormatAction;
     private final AlmondFx mAlmondFX = AlmondFx.getInstance();
+    private FbdModule mFbdModule;
     private Action mHelpAction;
     private MapollageModule mMapollageModule;
     private final Options mOptions = Options.getInstance();
@@ -186,6 +187,17 @@ public class MainApp extends Application {
         applicationMenu.getItems().get(cnt - 1).setText(String.format("%s %s", Dict.QUIT.toString(), APP_TITLE));
     }
 
+    private void initToolbar() {
+//        mRefreshToolbarItem = new ToolbarItem(
+//                Dict.REFRESH.toString(),
+//                MaterialIcon._Navigation.REFRESH.getImageView(ICON_SIZE_TOOLBAR, Color.LIGHTGRAY),
+//                event -> {
+//                }
+//        );
+//
+//        mWorkbench.getToolbarControlsRight().addAll(mRefreshToolbarItem);
+    }
+
     private void initWorkbenchDrawer() {
         //options
         mOptionsAction = new Action(Dict.OPTIONS.toString(), (ActionEvent event) -> {
@@ -254,17 +266,6 @@ public class MainApp extends Application {
         if (!IS_MAC) {
             mOptionsAction.setAccelerator(new KeyCodeCombination(KeyCode.COMMA, KeyCombination.SHORTCUT_DOWN));
         }
-    }
-
-    private void initToolbar() {
-//        mRefreshToolbarItem = new ToolbarItem(
-//                Dict.REFRESH.toString(),
-//                MaterialIcon._Navigation.REFRESH.getImageView(ICON_SIZE_TOOLBAR, Color.LIGHTGRAY),
-//                event -> {
-//                }
-//        );
-//
-//        mWorkbench.getToolbarControlsRight().addAll(mRefreshToolbarItem);
     }
 
 }

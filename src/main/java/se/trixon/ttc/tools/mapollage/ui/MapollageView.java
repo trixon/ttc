@@ -63,6 +63,7 @@ import se.trixon.almond.util.SystemHelper;
 import se.trixon.almond.util.fx.FxHelper;
 import se.trixon.almond.util.fx.control.LogPanel;
 import se.trixon.almond.util.fx.dialogs.SimpleDialog;
+import static se.trixon.ttc.MainApp.ICON_SIZE_PROFILE;
 import static se.trixon.ttc.MainApp.ICON_SIZE_TOOLBAR;
 import se.trixon.ttc.RunState;
 import se.trixon.ttc.tools.mapollage.Operation;
@@ -77,7 +78,6 @@ import se.trixon.ttc.tools.mapollage.profile.Profile;
  */
 public class MapollageView extends BorderPane {
 
-    private static final int ICON_SIZE_PROFILE = 32;
     private static final Logger LOGGER = Logger.getLogger(MapollageView.class.getName());
 
     private final ResourceBundle mBundle = SystemHelper.getBundle(MapollageView.class, "Bundle");

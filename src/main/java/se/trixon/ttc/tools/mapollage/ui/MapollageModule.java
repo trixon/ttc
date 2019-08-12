@@ -34,8 +34,8 @@ public class MapollageModule extends WorkbenchModule {
     private boolean mFirstRun = true;
     private ToolbarItem mHomeToolbarItem;
     private ToolbarItem mLogToolbarItem;
-    private MapollageView mMapollageView;
     private ToolbarItem mRunToolbarItem;
+    private MapollageView mView;
 
     public MapollageModule() {
         super("Mapollage", MaterialIcon._Maps.PIN_DROP.getImageView(MainApp.MODULE_ICON_SIZE).getImage());
@@ -43,19 +43,19 @@ public class MapollageModule extends WorkbenchModule {
 
     @Override
     public Node activate() {
-        return mMapollageView;
+        return mView;
     }
 
     @Override
     public boolean destroy() {
-        mMapollageView.profilesSave();
+        mView.profilesSave();
         return super.destroy();
     }
 
     @Override
     public void init(Workbench workbench) {
         super.init(workbench);
-        mMapollageView = new MapollageView(workbench, this);
+        mView = new MapollageView(workbench, this);
         if (mFirstRun) {
             initToolbar();
             mFirstRun = false;
@@ -70,6 +70,9 @@ public class MapollageModule extends WorkbenchModule {
                 case STARTABLE:
                     getToolbarControlsLeft().setAll(
                             mLogToolbarItem
+                    );
+                    getToolbarControlsRight().setAll(
+                            mAddToolbarItem
                     );
 
 //                mOptionsAction.setDisabled(false);
@@ -111,7 +114,7 @@ public class MapollageModule extends WorkbenchModule {
                 event -> {
                     mLogToolbarItem.setDisable(false);
                     setRunningState(RunState.STARTABLE);
-                    mMapollageView.doNavHome();
+                    mView.doNavHome();
                 }
         );
         mHomeToolbarItem.setTooltip(new Tooltip(Dict.LIST.toString()));
@@ -120,24 +123,23 @@ public class MapollageModule extends WorkbenchModule {
                 MaterialIcon._Editor.FORMAT_ALIGN_LEFT.getImageView(MainApp.ICON_SIZE_TOOLBAR),
                 event -> {
                     setRunningState(RunState.CLOSEABLE);
-                    mMapollageView.doNavLog();
+                    mView.doNavLog();
                 }
         );
         mLogToolbarItem.setTooltip(new Tooltip(Dict.OUTPUT.toString()));
         mLogToolbarItem.setDisable(true);
 
-        mAddToolbarItem = new ToolbarItem(
+        mAddToolbarItem = new ToolbarItem(Dict.ADD.toString(),
                 MaterialIcon._Content.ADD.getImageView(MainApp.ICON_SIZE_TOOLBAR),
                 event -> {
-                    mMapollageView.profileEdit(null);
+                    mView.profileEdit(null);
                 }
         );
-        mAddToolbarItem.setTooltip(new Tooltip(Dict.ADD.toString()));
 
         mRunToolbarItem = new ToolbarItem(
                 MaterialIcon._Av.PLAY_ARROW.getImageView(MainApp.ICON_SIZE_TOOLBAR),
                 event -> {
-                    mMapollageView.doRun();
+                    mView.doRun();
                 }
         );
         mRunToolbarItem.setTooltip(new Tooltip(Dict.START.toString()));
@@ -145,7 +147,7 @@ public class MapollageModule extends WorkbenchModule {
         mCancelToolbarItem = new ToolbarItem(
                 MaterialIcon._Navigation.CANCEL.getImageView(MainApp.ICON_SIZE_TOOLBAR),
                 event -> {
-                    mMapollageView.doCancel();
+                    mView.doCancel();
                 }
         );
         mCancelToolbarItem.setTooltip(new Tooltip(Dict.CANCEL.toString()));

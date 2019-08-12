@@ -58,6 +58,7 @@ import org.controlsfx.glyphfont.GlyphFontRegistry;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.SystemHelper;
 import se.trixon.almond.util.fx.FxHelper;
+import static se.trixon.ttc.MainApp.ICON_SIZE_PROFILE;
 import se.trixon.ttc.Options;
 import se.trixon.ttc.RunState;
 import se.trixon.ttc.tools.fbd.NameCase;
@@ -72,7 +73,6 @@ import se.trixon.ttc.tools.fbd.ProfileManager;
  */
 public class FbdView extends BorderPane {
 
-    private static final int ICON_SIZE_PROFILE = 32;
     private static final Logger LOGGER = Logger.getLogger(FbdView.class.getName());
 
     private final ResourceBundle mBundle = SystemHelper.getBundle(FbdView.class, "Bundle");
