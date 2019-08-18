@@ -40,6 +40,7 @@ import javafx.scene.input.KeyCombination;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
@@ -79,6 +80,8 @@ public class MainApp extends Application {
     private MapollageModule mMapollageModule;
     private final Options mOptions = Options.getInstance();
     private Action mOptionsAction;
+    private Preferences mPreferences;
+    private PreferencesModule mPreferencesModule;
     private ToolbarItem mRefreshToolbarItem;
     private Stage mStage;
     private Workbench mWorkbench;
@@ -104,13 +107,15 @@ public class MainApp extends Application {
         mStage.show();
         initAccelerators();
 
-        mWorkbench.openModule(mMapollageModule);
+        mWorkbench.openModule(mPreferencesModule);
     }
 
     private void createUI() {
+        mPreferences = new Preferences();
+        mPreferencesModule = new PreferencesModule(mPreferences);
         mFbdModule = new FbdModule();
         mMapollageModule = new MapollageModule();
-        mWorkbench = Workbench.builder(mFbdModule, mMapollageModule).build();
+        mWorkbench = Workbench.builder(mFbdModule, mMapollageModule, mPreferencesModule).build();
 
         mWorkbench.getStylesheets().add(MainApp.class.getResource("customTheme.css").toExternalForm());
         initToolbar();
@@ -188,14 +193,14 @@ public class MainApp extends Application {
     }
 
     private void initToolbar() {
-//        mRefreshToolbarItem = new ToolbarItem(
-//                Dict.REFRESH.toString(),
-//                MaterialIcon._Navigation.REFRESH.getImageView(ICON_SIZE_TOOLBAR, Color.LIGHTGRAY),
-//                event -> {
-//                }
-//        );
-//
-//        mWorkbench.getToolbarControlsRight().addAll(mRefreshToolbarItem);
+        mRefreshToolbarItem = new ToolbarItem(
+                Dict.REFRESH.toString(),
+                MaterialIcon._Navigation.REFRESH.getImageView(ICON_SIZE_TOOLBAR, Color.LIGHTGRAY),
+                event -> {
+                }
+        );
+
+        mWorkbench.getToolbarControlsRight().addAll(mRefreshToolbarItem);
     }
 
     private void initWorkbenchDrawer() {
@@ -210,7 +215,7 @@ public class MainApp extends Application {
         //help
         mHelpAction = new Action(Dict.HELP.toString(), (ActionEvent event) -> {
             mWorkbench.hideNavigationDrawer();
-            SystemHelper.desktopBrowse("https://trixon.se/projects/filebydate/documentation/");
+            SystemHelper.desktopBrowse("https://trixon.se/projects/ttc/documentation/");
         });
         //mHelpAction.setAccelerator(new KeyCodeCombination(KeyCode.F1, KeyCombination.SHORTCUT_ANY));
         mHelpAction.setGraphic(MaterialIcon._Action.HELP_OUTLINE.getImageView(ICON_SIZE_DRAWER));
