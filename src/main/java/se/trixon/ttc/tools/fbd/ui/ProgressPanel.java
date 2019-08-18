@@ -15,8 +15,8 @@
  */
 package se.trixon.ttc.tools.fbd.ui;
 
-import java.util.prefs.PreferenceChangeEvent;
 import javafx.application.Platform;
+import javafx.beans.value.ObservableValue;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.ProgressBar;
@@ -27,7 +27,8 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.fx.control.LogPanel;
-import se.trixon.ttc.Options;
+import se.trixon.ttc.Preferences;
+import se.trixon.ttc.tools.GeneralPreferences;
 
 /**
  *
@@ -36,9 +37,9 @@ import se.trixon.ttc.Options;
 public class ProgressPanel extends BorderPane {
 
     private final Tab mErrTab = new Tab(Dict.Dialog.ERROR.toString());
+    private final GeneralPreferences mGeneralPreference = Preferences.getInstance().general();
     private final LogPanel mLogErrPanel = new LogPanel();
     private final LogPanel mLogOutPanel = new LogPanel();
-    private final Options mOptions = Options.getInstance();
     private final Tab mOutTab = new Tab(Dict.OUTPUT.toString());
     private final ProgressBar mProgressBar = new ProgressBar();
     private final TabPane mTabPane = new TabPane();
@@ -62,18 +63,13 @@ public class ProgressPanel extends BorderPane {
         setCenter(mTabPane);
         setBottom(box);
 
-        mLogOutPanel.setWrapText(mOptions.isWordWrap());
-        mLogErrPanel.setWrapText(mOptions.isWordWrap());
+        mLogOutPanel.setWrapText(mGeneralPreference.isWordWrap());
+        mLogErrPanel.setWrapText(mGeneralPreference.isWordWrap());
 
-        mOptions.getPreferences().addPreferenceChangeListener((PreferenceChangeEvent evt) -> {
-            switch (evt.getKey()) {
-                case Options.KEY_WORD_WRAP:
-                    mLogOutPanel.setWrapText(mOptions.isWordWrap());
-                    mLogErrPanel.setWrapText(mOptions.isWordWrap());
-                    break;
-            }
+        mGeneralPreference.wordWrapProperty().addListener((ObservableValue<? extends Boolean> ov, Boolean t, Boolean newWordWrap) -> {
+            mLogOutPanel.setWrapText(newWordWrap);
+            mLogErrPanel.setWrapText(newWordWrap);
         });
-
     }
 
     void clear() {

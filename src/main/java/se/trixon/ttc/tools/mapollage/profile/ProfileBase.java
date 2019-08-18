@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright 2019 Patrik Karlström.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -18,8 +18,10 @@ package se.trixon.ttc.tools.mapollage.profile;
 import java.util.ResourceBundle;
 import org.apache.commons.lang3.StringUtils;
 import se.trixon.almond.util.SystemHelper;
+import se.trixon.ttc.tools.GeneralPreferences;
+import se.trixon.ttc.Preferences;
 import se.trixon.ttc.tools.mapollage.Mapollage;
-import se.trixon.ttc.tools.mapollage.Options;
+import se.trixon.ttc.tools.mapollage.MapollagePreferences;
 import se.trixon.ttc.tools.mapollage.ui.config.BaseTab;
 
 /**
@@ -28,11 +30,11 @@ import se.trixon.ttc.tools.mapollage.ui.config.BaseTab;
  */
 public abstract class ProfileBase {
 
-    protected static StringBuilder sValidationErrorBuilder;
-
     protected static final ResourceBundle BUNDLE = SystemHelper.getBundle(Mapollage.class, "Bundle");
     protected static final ResourceBundle BUNDLE_UI = SystemHelper.getBundle(BaseTab.class, "Bundle");
-    protected static final Options mOptions = Options.getInstance();
+    protected static StringBuilder sValidationErrorBuilder;
+    protected transient final GeneralPreferences mPreferencesGeneral = Preferences.getInstance().general();
+    protected transient final MapollagePreferences mPreferencesMapollage = Preferences.getInstance().mapollage();
 
     public ProfileBase() {
     }

@@ -17,15 +17,13 @@ package se.trixon.ttc.tools.mapollage.ui.config;
 
 import java.util.Locale;
 import java.util.ResourceBundle;
-import java.util.prefs.PreferenceChangeEvent;
 import javafx.geometry.Insets;
 import javafx.scene.control.Tab;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Region;
-import javafx.scene.paint.Color;
 import org.controlsfx.validation.ValidationSupport;
 import se.trixon.almond.util.SystemHelper;
-import se.trixon.ttc.tools.mapollage.Options;
+import se.trixon.ttc.Preferences;
 import se.trixon.ttc.tools.mapollage.ProfileManager;
 import se.trixon.ttc.tools.mapollage.profile.Profile;
 
@@ -38,27 +36,23 @@ public abstract class BaseTab extends Tab {
     public static final int ICON_SIZE = 32;
     public static final String MULTILINE_DIVIDER = "* * * * *";
     protected static ValidationSupport sValidationSupport;
-    private final Color mIconColor = Color.BLACK;
-    private final Insets mTopInsets = new Insets(8, 0, 0, 0);
     protected final ResourceBundle mBundle = SystemHelper.getBundle(BaseTab.class, "Bundle");
     protected final String mHeaderPrefix = " + ";
-    protected final Options mOptions = Options.getInstance();
+    protected final Preferences mPreferences = Preferences.getInstance();
     protected Profile mProfile;
     protected final ProfileManager mProfileManager = ProfileManager.getInstance();
     protected String mTitle;
+    private final Insets mTopInsets = new Insets(8, 0, 0, 0);
 
     public static void setValidationSupport(ValidationSupport validationSupport) {
         BaseTab.sValidationSupport = validationSupport;
     }
 
     public BaseTab() {
-        mOptions.getPreferences().addPreferenceChangeListener((PreferenceChangeEvent evt) -> {
-            onPreferenceChange(evt);
-        });
     }
 
     public Locale getDateFormatLocale() {
-        return mOptions.getLocale();
+        return mPreferences.general().getLocale();
     }
 
     public String getTitle() {
@@ -66,9 +60,6 @@ public abstract class BaseTab extends Tab {
     }
 
     public abstract void load();
-
-    public void onPreferenceChange(PreferenceChangeEvent evt) {
-    }
 
     public abstract void save();
 

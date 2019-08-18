@@ -30,7 +30,7 @@ import org.apache.commons.lang3.StringUtils;
 import se.trixon.almond.util.BooleanHelper;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.SystemHelper;
-import se.trixon.ttc.tools.mapollage.ui.OptionsPanel;
+import se.trixon.ttc.tools.mapollage.ui.MapollageView;
 
 /**
  *
@@ -277,16 +277,16 @@ public class Profile extends ProfileBase implements Comparable<Profile>, Cloneab
 
     @Override
     protected ProfileInfo getProfileInfo() {
-        ResourceBundle bundle = SystemHelper.getBundle(OptionsPanel.class, "Bundle");
+        ResourceBundle bundle = SystemHelper.getBundle(MapollageView.class, "Bundle");
         ProfileInfo profileInfo = new ProfileInfo();
         LinkedHashMap<String, String> values = new LinkedHashMap<>();
 
-        values.put(Dict.CALENDAR_LANGUAGE.toString(), mOptions.getLocale().getDisplayName());
-        values.put(Dict.THUMBNAIL.toString(), String.valueOf(mOptions.getThumbnailSize()));
-        values.put(Dict.BORDER_SIZE.toString(), String.valueOf(mOptions.getThumbnailBorderSize()));
-        values.put(String.format("%s %s", Dict.DEFAULT.toString(), Dict.LATITUDE.toString()), String.valueOf(mOptions.getDefaultLat()));
-        values.put(String.format("%s %s", Dict.DEFAULT.toString(), Dict.LONGITUDE.toString()), String.valueOf(mOptions.getDefaultLon()));
-        values.put(bundle.getString("ProgressPanel.autoOpenCheckBox"), BooleanHelper.asYesNo(mOptions.isAutoOpen()));
+        values.put(Dict.CALENDAR_LANGUAGE.toString(), mPreferencesGeneral.getLocale().getDisplayName());
+        values.put(Dict.THUMBNAIL.toString(), String.valueOf(mPreferencesMapollage.getThumbnailSize()));
+        values.put(Dict.BORDER_SIZE.toString(), String.valueOf(mPreferencesMapollage.getThumbnailBorderSize()));
+        values.put(String.format("%s %s", Dict.DEFAULT.toString(), Dict.LATITUDE.toString()), String.valueOf(mPreferencesMapollage.getDefaultLat()));
+        values.put(String.format("%s %s", Dict.DEFAULT.toString(), Dict.LONGITUDE.toString()), String.valueOf(mPreferencesMapollage.getDefaultLon()));
+        values.put(bundle.getString("ProgressPanel.autoOpenCheckBox"), BooleanHelper.asYesNo(mPreferencesMapollage.isAutoOpen()));
 
         profileInfo.setTitle(Dict.OPTIONS.toString());
         profileInfo.setValues(values);

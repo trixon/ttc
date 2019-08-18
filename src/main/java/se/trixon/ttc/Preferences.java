@@ -1,138 +1,78 @@
+/*
+ * Copyright 2019 Patrik Karlström.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package se.trixon.ttc;
 
-import com.dlsc.formsfx.model.structure.Field;
-import com.dlsc.formsfx.model.structure.IntegerField;
-import com.dlsc.formsfx.model.validators.DoubleRangeValidator;
 import com.dlsc.preferencesfx.PreferencesFx;
-import com.dlsc.preferencesfx.formsfx.view.controls.IntegerSliderControl;
 import com.dlsc.preferencesfx.model.Category;
-import com.dlsc.preferencesfx.model.Group;
-import com.dlsc.preferencesfx.model.Setting;
 import com.dlsc.preferencesfx.view.PreferencesFxView;
-import java.util.Arrays;
-import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.DoubleProperty;
-import javafx.beans.property.IntegerProperty;
-import javafx.beans.property.ListProperty;
-import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.SimpleBooleanProperty;
-import javafx.beans.property.SimpleDoubleProperty;
-import javafx.beans.property.SimpleIntegerProperty;
-import javafx.beans.property.SimpleListProperty;
-import javafx.beans.property.SimpleObjectProperty;
-import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.property.StringProperty;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
+import se.trixon.almond.util.Dict;
+import se.trixon.ttc.tools.GeneralPreferences;
+import se.trixon.ttc.tools.mapollage.MapollagePreferences;
 
 /**
  * Model object for Preferences.
  */
 public class Preferences {
 
-    public PreferencesFx preferencesFx;
+    private final GeneralPreferences mGeneralPreferences = new GeneralPreferences();
+    private final MapollagePreferences mMapollagePreferences = new MapollagePreferences();
+    private final PreferencesFx mPreferencesFx;
 
-    // General
-    StringProperty welcomeText = new SimpleStringProperty("Hello World");
-    IntegerProperty brightness = new SimpleIntegerProperty(50);
-    BooleanProperty nightMode = new SimpleBooleanProperty(true);
-
-    // Screen
-    DoubleProperty scaling = new SimpleDoubleProperty(1);
-    StringProperty screenName = new SimpleStringProperty("PreferencesFx Monitor");
-
-    ObservableList<String> resolutionItems = FXCollections.observableArrayList(Arrays.asList(
-            "1024x768", "1280x1024", "1440x900", "1920x1080")
-    );
-    ObjectProperty<String> resolutionSelection = new SimpleObjectProperty<>("1024x768");
-
-    ListProperty<String> orientationItems = new SimpleListProperty<>(
-            FXCollections.observableArrayList(Arrays.asList("Vertical", "Horizontal"))
-    );
-    ObjectProperty<String> orientationSelection = new SimpleObjectProperty<>("Vertical");
-
-    IntegerProperty fontSize = new SimpleIntegerProperty(12);
-    DoubleProperty lineSpacing = new SimpleDoubleProperty(1.5);
-
-    // Favorites
-    ListProperty<String> favoritesItems = new SimpleListProperty<>(
-            FXCollections.observableArrayList(Arrays.asList(
-                    "eMovie", "Eboda Phot-O-Shop", "Mikesoft Text",
-                    "Mikesoft Numbers", "Mikesoft Present", "IntelliG"
-            )
-            )
-    );
-    ListProperty<String> favoritesSelection = new SimpleListProperty<>(
-            FXCollections.observableArrayList(Arrays.asList(
-                    "Eboda Phot-O-Shop", "Mikesoft Text"))
-    );
-
-    // Custom Control
-    IntegerProperty customControlProperty = new SimpleIntegerProperty(42);
-    IntegerField customControl = setupCustomControl();
-
-    public Preferences() {
-        preferencesFx = createPreferences();
+    public static Preferences getInstance() {
+        return Holder.INSTANCE;
     }
 
-    private IntegerField setupCustomControl() {
-        return Field.ofIntegerType(customControlProperty).render(
-                new IntegerSliderControl(0, 42));
+    private Preferences() {
+        mPreferencesFx = createPreferences();
+    }
+
+    public void discardChanges() {
+        mPreferencesFx.discardChanges();
+    }
+
+    public GeneralPreferences general() {
+        return mGeneralPreferences;
+    }
+
+    public PreferencesFxView getPreferencesFxView() {
+        return mPreferencesFx.getView();
+    }
+
+    public MapollagePreferences mapollage() {
+        return mMapollagePreferences;
+    }
+
+    public void save() {
+        mPreferencesFx.saveSettings();
     }
 
     private PreferencesFx createPreferences() {
         return PreferencesFx.of(PreferencesModule.class,
-                Category.of("General",
-                        Group.of("Greeting",
-                                Setting.of("Welcome Text", welcomeText)
-                        ),
-                        Group.of("Display",
-                                Setting.of("Brightness", brightness),
-                                Setting.of("Night mode", nightMode)
-                        )
-                ),
-                Category.of("Screen")
+                mGeneralPreferences.getCategory(),
+                Category.of(Dict.TOOLS.toString())
+                        .expand()
                         .subCategories(
-                                Category.of("Scaling & Ordering",
-                                        Group.of(
-                                                Setting.of("Scaling", scaling)
-                                                        .validate(DoubleRangeValidator
-                                                                .atLeast(1, "Scaling needs to be at least 1")
-                                                        ),
-                                                Setting.of("Screen name", screenName),
-                                                Setting.of("Resolution", resolutionItems, resolutionSelection),
-                                                Setting.of("Orientation", orientationItems, orientationSelection)
-                                        ).description("Screen Options"),
-                                        Group.of(
-                                                Setting.of("Font Size", fontSize, 6, 36),
-                                                Setting.of("Line Spacing", lineSpacing, 0, 3, 1)
-                                        )
-                                )
-                        ),
-                Category.of("Favorites",
-                        Setting.of("Favorites", favoritesItems, favoritesSelection),
-                        Setting.of("Favorite Number", customControl, customControlProperty)
-                )
+                                Category.of("FileByDate"),
+                                mMapollagePreferences.getCategory()
+                        )
         ).persistWindowState(false).saveSettings(true).debugHistoryMode(false).buttonsVisibility(true);
     }
 
-    public void save() {
-        preferencesFx.saveSettings();
-    }
+    private static class Holder {
 
-    public void discardChanges() {
-        preferencesFx.discardChanges();
-    }
-
-    public PreferencesFxView getPreferencesFxView() {
-        return preferencesFx.getView();
-    }
-
-    public BooleanProperty nightModeProperty() {
-        return nightMode;
-    }
-
-    public boolean isNightMode() {
-        return nightMode.get();
+        private static final Preferences INSTANCE = new Preferences();
     }
 }

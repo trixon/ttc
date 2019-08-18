@@ -1,4 +1,4 @@
-/*
+/* 
  * Copyright 2019 Patrik Karlström.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -56,7 +56,7 @@ import se.trixon.almond.util.SystemHelper;
 import se.trixon.almond.util.fx.FxHelper;
 import se.trixon.almond.util.icons.material.MaterialIcon;
 import static se.trixon.ttc.MainApp.ICON_SIZE_PROFILE;
-import se.trixon.ttc.Options;
+import se.trixon.ttc.Preferences;
 import se.trixon.ttc.RunState;
 import se.trixon.ttc.tools.fbd.NameCase;
 import se.trixon.ttc.tools.fbd.Operation;
@@ -81,7 +81,7 @@ public class FbdView extends BorderPane {
     private final FbdModule mModule;
     private OperationListener mOperationListener;
     private Thread mOperationThread;
-    private final Options mOptions = Options.getInstance();
+    private final Preferences mPreferences = Preferences.getInstance();
     private PreviewPanel mPreviewPanel;
     private final ProfileManager mProfileManager = ProfileManager.getInstance();
     private LinkedList<Profile> mProfiles;

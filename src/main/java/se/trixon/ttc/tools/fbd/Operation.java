@@ -15,12 +15,6 @@
  */
 package se.trixon.ttc.tools.fbd;
 
-import se.trixon.ttc.tools.fbd.ProfileManager;
-import se.trixon.ttc.tools.fbd.DateSource;
-import se.trixon.ttc.tools.fbd.Profile;
-import se.trixon.ttc.tools.fbd.NameCase;
-import se.trixon.ttc.tools.fbd.FileVisitor;
-import se.trixon.ttc.tools.fbd.OperationListener;
 import com.drew.imaging.ImageMetadataReader;
 import com.drew.imaging.ImageProcessingException;
 import com.drew.metadata.Directory;

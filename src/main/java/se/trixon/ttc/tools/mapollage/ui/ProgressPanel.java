@@ -16,13 +16,11 @@
 package se.trixon.ttc.tools.mapollage.ui;
 
 import java.util.ResourceBundle;
-import java.util.prefs.PreferenceChangeEvent;
 import javafx.application.Platform;
-import javafx.event.ActionEvent;
+import javafx.beans.value.ObservableValue;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
-import javafx.scene.control.CheckBox;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
@@ -34,7 +32,8 @@ import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.SystemHelper;
 import se.trixon.almond.util.fx.FxHelper;
 import se.trixon.almond.util.fx.control.LogPanel;
-import se.trixon.ttc.tools.mapollage.Options;
+import se.trixon.ttc.tools.GeneralPreferences;
+import se.trixon.ttc.Preferences;
 
 /**
  *
@@ -43,12 +42,11 @@ import se.trixon.ttc.tools.mapollage.Options;
 public class ProgressPanel extends BorderPane {
 
     private final ResourceBundle mBundle = SystemHelper.getBundle(ProgressPanel.class, "Bundle");
-    private final CheckBox mCheckBox = new CheckBox(mBundle.getString("ProgressPanel.autoOpenCheckBox"));
     private final Tab mErrTab = new Tab(Dict.Dialog.ERROR.toString());
+    private final GeneralPreferences mGeneralPreference = Preferences.getInstance().general();
     private final LogPanel mLogErrPanel = new LogPanel();
     private final LogPanel mLogOutPanel = new LogPanel();
     private final Button mOpenButton = new Button();
-    private final Options mOptions = Options.getInstance();
     private final Tab mOutTab = new Tab(Dict.OUTPUT.toString());
     private final ProgressBar mProgressBar = new ProgressBar();
     private final TabPane mTabPane = new TabPane();
@@ -67,30 +65,21 @@ public class ProgressPanel extends BorderPane {
         Insets insets = new Insets(8);
         mOpenButton.setPadding(insets);
         mProgressBar.setPadding(insets);
-        mCheckBox.setSelected(mOptions.isAutoOpen());
-        mCheckBox.setOnAction((ActionEvent event) -> {
-            mOptions.setAutoOpen(mCheckBox.isSelected());
-        });
 
-        HBox box = new HBox(8, mProgressBar, mCheckBox, mOpenButton);
+        HBox box = new HBox(8, mProgressBar, mOpenButton);
         HBox.setHgrow(mProgressBar, Priority.ALWAYS);
         mProgressBar.setMaxWidth(Double.MAX_VALUE);
         box.setAlignment(Pos.CENTER);
         setCenter(mTabPane);
         setBottom(box);
 
-        mLogOutPanel.setWrapText(mOptions.isWordWrap());
-        mLogErrPanel.setWrapText(mOptions.isWordWrap());
+        mLogOutPanel.setWrapText(mGeneralPreference.isWordWrap());
+        mLogErrPanel.setWrapText(mGeneralPreference.isWordWrap());
 
-        mOptions.getPreferences().addPreferenceChangeListener((PreferenceChangeEvent evt) -> {
-            switch (evt.getKey()) {
-                case Options.KEY_WORD_WRAP:
-                    mLogOutPanel.setWrapText(mOptions.isWordWrap());
-                    mLogErrPanel.setWrapText(mOptions.isWordWrap());
-                    break;
-            }
+        mGeneralPreference.wordWrapProperty().addListener((ObservableValue<? extends Boolean> ov, Boolean t, Boolean newWordWrap) -> {
+            mLogOutPanel.setWrapText(newWordWrap);
+            mLogErrPanel.setWrapText(newWordWrap);
         });
-
     }
 
     public Button getOpenButton() {

@@ -19,17 +19,13 @@ import com.dlsc.workbenchfx.Workbench;
 import com.dlsc.workbenchfx.model.WorkbenchDialog;
 import com.dlsc.workbenchfx.view.controls.ToolbarItem;
 import de.codecentric.centerdevice.MenuToolkit;
-import java.util.Optional;
 import javafx.application.Application;
 import javafx.collections.ObservableMap;
 import javafx.event.ActionEvent;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
-import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
-import javafx.scene.control.CheckBox;
-import javafx.scene.control.DialogPane;
 import javafx.scene.control.Label;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
@@ -38,7 +34,6 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
@@ -53,7 +48,6 @@ import se.trixon.almond.util.PomInfo;
 import se.trixon.almond.util.SystemHelper;
 import se.trixon.almond.util.fx.AlmondFx;
 import se.trixon.almond.util.fx.FxHelper;
-import se.trixon.almond.util.fx.control.LocaleComboBox;
 import se.trixon.almond.util.fx.dialogs.about.AboutPane;
 import se.trixon.almond.util.icons.material.MaterialIcon;
 import se.trixon.ttc.tools.fbd.FileByDate;
@@ -78,11 +72,9 @@ public class MainApp extends Application {
     private FbdModule mFbdModule;
     private Action mHelpAction;
     private MapollageModule mMapollageModule;
-    private final Options mOptions = Options.getInstance();
     private Action mOptionsAction;
-    private Preferences mPreferences;
+    private ToolbarItem mOptionsToolbarItem;
     private PreferencesModule mPreferencesModule;
-    private ToolbarItem mRefreshToolbarItem;
     private Stage mStage;
     private Workbench mWorkbench;
 
@@ -107,12 +99,11 @@ public class MainApp extends Application {
         mStage.show();
         initAccelerators();
 
-        mWorkbench.openModule(mPreferencesModule);
+        //mWorkbench.openModule(mPreferencesModule);
     }
 
     private void createUI() {
-        mPreferences = new Preferences();
-        mPreferencesModule = new PreferencesModule(mPreferences);
+        mPreferencesModule = new PreferencesModule();
         mFbdModule = new FbdModule();
         mMapollageModule = new MapollageModule();
         mWorkbench = Workbench.builder(mFbdModule, mMapollageModule, mPreferencesModule).build();
@@ -127,32 +118,7 @@ public class MainApp extends Application {
     }
 
     private void displayOptions() {
-        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-//        alert.initOwner(mStage);
-        alert.initOwner(null);
-        alert.setTitle(Dict.OPTIONS.toString());
-        alert.setGraphic(null);
-        alert.setHeaderText(null);
-
-        Label label = new Label(Dict.CALENDAR_LANGUAGE.toString());
-        LocaleComboBox localeComboBox = new LocaleComboBox();
-        CheckBox checkBox = new CheckBox(Dict.DYNAMIC_WORD_WRAP.toString());
-        GridPane gridPane = new GridPane();
-        //gridPane.setGridLinesVisible(true);
-        gridPane.addColumn(0, label, localeComboBox, checkBox);
-        GridPane.setMargin(checkBox, new Insets(16, 0, 0, 0));
-
-        final DialogPane dialogPane = alert.getDialogPane();
-        dialogPane.setContent(gridPane);
-
-        localeComboBox.setLocale(mOptions.getLocale());
-        checkBox.setSelected(mOptions.isWordWrap());
-
-        Optional<ButtonType> result = FxHelper.showAndWait(alert, mStage);
-        if (result.get() == ButtonType.OK) {
-            mOptions.setLocale(localeComboBox.getLocale());
-            mOptions.setWordWrap(checkBox.isSelected());
-        }
+        mWorkbench.openModule(mPreferencesModule);
     }
 
     private void initAccelerators() {
@@ -193,14 +159,13 @@ public class MainApp extends Application {
     }
 
     private void initToolbar() {
-        mRefreshToolbarItem = new ToolbarItem(
-                Dict.REFRESH.toString(),
-                MaterialIcon._Navigation.REFRESH.getImageView(ICON_SIZE_TOOLBAR, Color.LIGHTGRAY),
+        mOptionsToolbarItem = new ToolbarItem(Dict.OPTIONS.toString(), MaterialIcon._Action.SETTINGS.getImageView(ICON_SIZE_TOOLBAR, Color.LIGHTGRAY),
                 event -> {
+                    mWorkbench.openModule(mPreferencesModule);
                 }
         );
 
-        mWorkbench.getToolbarControlsRight().addAll(mRefreshToolbarItem);
+        mWorkbench.getToolbarControlsRight().addAll(mOptionsToolbarItem);
     }
 
     private void initWorkbenchDrawer() {
@@ -251,7 +216,6 @@ public class MainApp extends Application {
 
             WorkbenchDialog dialog = WorkbenchDialog.builder(Dict.ABOUT.toString(), mainBorderPane, ButtonType.CLOSE).build();
             mWorkbench.showDialog(dialog);
-//            AboutPane.getAction(mStage, aboutModel).handle(null);
         });
 
         //about date format
@@ -262,7 +226,6 @@ public class MainApp extends Application {
         });
 
         mWorkbench.getNavigationDrawerItems().setAll(
-                ActionUtils.createMenuItem(mOptionsAction),
                 ActionUtils.createMenuItem(mHelpAction),
                 ActionUtils.createMenuItem(mAboutDateFormatAction),
                 ActionUtils.createMenuItem(aboutAction)
@@ -272,5 +235,4 @@ public class MainApp extends Application {
             mOptionsAction.setAccelerator(new KeyCodeCombination(KeyCode.COMMA, KeyCombination.SHORTCUT_DOWN));
         }
     }
-
 }

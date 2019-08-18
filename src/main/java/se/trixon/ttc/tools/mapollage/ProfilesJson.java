@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright 2019 Patrik Karlström.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -45,11 +45,14 @@ public class ProfilesJson {
 
     public static ProfilesJson open(File file) throws IOException, JsonSyntaxException {
         String json = FileUtils.readFileToString(file, Charset.defaultCharset());
-
-        ProfilesJson profiles = GSON.fromJson(json, ProfilesJson.class);
-
-        if (profiles.mFileFormatVersion != FILE_FORMAT_VERSION) {
-            //TODO Handle file format version change
+        ProfilesJson profiles = null;
+        try {
+            profiles = GSON.fromJson(json, ProfilesJson.class);
+            if (profiles.mFileFormatVersion != FILE_FORMAT_VERSION) {
+                //TODO Handle file format version change
+            }
+        } catch (JsonSyntaxException e) {
+            System.err.println(e.getMessage());
         }
 
         return profiles;

@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright 2019 Patrik Karlström.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -36,6 +36,7 @@ import java.util.TimeZone;
 import javax.imageio.ImageIO;
 import se.trixon.almond.util.GraphicsHelper;
 import se.trixon.almond.util.ImageScaler;
+import se.trixon.ttc.Preferences;
 
 /**
  *
@@ -51,9 +52,9 @@ public class PhotoInfo {
     private final ImageScaler mImageScaler = ImageScaler.getInstance();
     private final boolean mIncludeNullCoordinate;
     private Metadata mMetadata;
-    private final Options mOptions = Options.getInstance();
     private int mOrientation;
     private Dimension mOriginalDimension = null;
+    private final MapollagePreferences mPreferences = Preferences.getInstance().mapollage();
 
     public PhotoInfo(File file, boolean includeNullCoordinate) {
         mFile = file;
@@ -62,8 +63,8 @@ public class PhotoInfo {
 
     public void createThumbnail(File dest) throws IOException {
         if (!dest.exists()) {
-            int borderSize = mOptions.getThumbnailBorderSize();
-            int thumbnailSize = mOptions.getThumbnailSize();
+            int borderSize = mPreferences.getThumbnailBorderSize();
+            int thumbnailSize = mPreferences.getThumbnailSize();
 
             BufferedImage scaledImage = mImageScaler.getScaledImage(mFile, new Dimension(thumbnailSize - borderSize * 2, thumbnailSize - borderSize * 2));
             scaledImage = GraphicsHelper.rotate(scaledImage, mOrientation);
@@ -189,7 +190,7 @@ public class PhotoInfo {
             try {
                 geoLocation = mGpsDirectory.getGeoLocation();
                 if (geoLocation.isZero()) {
-                    geoLocation = new GeoLocation(mOptions.getDefaultLat(), mOptions.getDefaultLon());
+                    geoLocation = new GeoLocation(mPreferences.getDefaultLat(), mPreferences.getDefaultLon());
                 }
             } catch (Exception e) {
                 //never error
@@ -204,7 +205,7 @@ public class PhotoInfo {
         }
 
         if (geoLocation == null) {
-            geoLocation = new GeoLocation(mOptions.getDefaultLat(), mOptions.getDefaultLon());
+            geoLocation = new GeoLocation(mPreferences.getDefaultLat(), mPreferences.getDefaultLon());
 
         }
         return geoLocation;

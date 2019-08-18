@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright 2019 Patrik Karlström.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -71,6 +71,7 @@ import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.Scaler;
 import se.trixon.almond.util.SystemHelper;
 import se.trixon.almond.util.ext.GrahamScan;
+import se.trixon.ttc.Preferences;
 import se.trixon.ttc.tools.mapollage.profile.Profile;
 import se.trixon.ttc.tools.mapollage.profile.ProfileDescription;
 import se.trixon.ttc.tools.mapollage.profile.ProfileDescription.DescriptionSegment;
@@ -107,12 +108,12 @@ public class Operation implements Runnable {
     private int mNumOfExif;
     private int mNumOfGps;
     private int mNumOfPlacemarks;
-    private final Options mOptions = Options.getInstance();
     private Folder mPathFolder;
     private Folder mPathGapFolder;
     private PhotoInfo mPhotoInfo;
     private Folder mPolygonFolder;
     private final HashMap<Folder, Folder> mPolygonRemovals = new HashMap<>();
+    private final MapollagePreferences mPreferences = Preferences.getInstance().mapollage();
     private final Profile mProfile;
     private final ProfileDescription mProfileDescription;
     private final ProfileFolder mProfileFolder;
@@ -869,14 +870,14 @@ public class Operation implements Runnable {
             mKml.marshal(stringWriter);
             String kmlString = stringWriter.toString();
 
-            if (mOptions.isCleanNs2()) {
+            if (mPreferences.isCleanNs2()) {
                 mListener.onOperationLog(mBundle.getString("clean_ns2"));
                 kmlString = StringUtils.replace(kmlString, "xmlns:ns2=", "xmlns=");
                 kmlString = StringUtils.replace(kmlString, "<ns2:", "<");
                 kmlString = StringUtils.replace(kmlString, "</ns2:", "</");
             }
 
-            if (mOptions.isCleanSpace()) {
+            if (mPreferences.isCleanSpace()) {
                 mListener.onOperationLog(mBundle.getString("clean_space"));
                 kmlString = StringUtils.replace(kmlString, "        ", "\t");
                 kmlString = StringUtils.replace(kmlString, "    ", "\t");
@@ -886,7 +887,7 @@ public class Operation implements Runnable {
                     new String[]{"&lt;", "&gt;", "&amp;"},
                     new String[]{"<", ">", ""});
 
-            if (mOptions.isLogKml()) {
+            if (mPreferences.isPrintKml()) {
                 mListener.onOperationLog("\n");
                 mListener.onOperationLog(kmlString);
                 mListener.onOperationLog("\n");

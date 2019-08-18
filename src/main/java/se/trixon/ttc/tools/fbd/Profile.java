@@ -1,4 +1,4 @@
-/*
+/* 
  * Copyright 2019 Patrik Karlström.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,7 +15,6 @@
  */
 package se.trixon.ttc.tools.fbd;
 
-import se.trixon.ttc.Options;
 import com.google.gson.annotations.SerializedName;
 import java.io.File;
 import java.nio.file.FileSystems;
@@ -29,6 +28,7 @@ import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.SystemHelper;
+import se.trixon.ttc.Preferences;
 import se.trixon.ttc.tools.fbd.Operation.Command;
 import se.trixon.ttc.tools.fbd.ui.FbdModule;
 
@@ -218,7 +218,7 @@ public class Profile implements Comparable<Profile>, Cloneable {
         }
 
         try {
-            mDateFormat = new SimpleDateFormat(mDatePattern, Options.getInstance().getLocale());
+            mDateFormat = new SimpleDateFormat(mDatePattern, Preferences.getInstance().general().getLocale());
         } catch (Exception e) {
             addValidationError(String.format(mBundle.getString("invalid_date_pattern"), mDatePattern));
         }

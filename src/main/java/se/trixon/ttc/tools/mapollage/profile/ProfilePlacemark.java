@@ -104,7 +104,7 @@ public class ProfilePlacemark extends ProfileBase {
     public boolean isValid() {
         if (mNameBy == NameBy.DATE) {
             try {
-                mDateFormat = new SimpleDateFormat(mDatePattern, mOptions.getLocale());
+                mDateFormat = new SimpleDateFormat(mDatePattern, mPreferencesGeneral.getLocale());
             } catch (IllegalArgumentException e) {
                 addValidationError(String.format(BUNDLE.getString("invalid_value"), PLACEMARK_NAME, mDatePattern));
             }

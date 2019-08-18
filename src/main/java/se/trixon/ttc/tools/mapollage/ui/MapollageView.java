@@ -62,10 +62,11 @@ import se.trixon.almond.util.fx.dialogs.SimpleDialog;
 import se.trixon.almond.util.icons.material.MaterialIcon;
 import static se.trixon.ttc.MainApp.ICON_SIZE_PROFILE;
 import static se.trixon.ttc.MainApp.ICON_SIZE_TOOLBAR;
+import se.trixon.ttc.Preferences;
 import se.trixon.ttc.RunState;
+import se.trixon.ttc.tools.mapollage.MapollagePreferences;
 import se.trixon.ttc.tools.mapollage.Operation;
 import se.trixon.ttc.tools.mapollage.OperationListener;
-import se.trixon.ttc.tools.mapollage.Options;
 import se.trixon.ttc.tools.mapollage.ProfileManager;
 import se.trixon.ttc.tools.mapollage.profile.Profile;
 
@@ -79,20 +80,20 @@ public class MapollageView extends BorderPane {
 
     private final ResourceBundle mBundle = SystemHelper.getBundle(MapollageView.class, "Bundle");
     private Font mDefaultFont;
-    private final ProfileIndicator mIndicator = new ProfileIndicator();
-    private final MapollageModule mModule;
-    private Thread mOperationThread;
-    private final Options mOptions = Options.getInstance();
-    private final ProgressPanel mProgressPanel = new ProgressPanel();
-    private final Workbench mWorkbench;
-    private ListView<Profile> mListView;
-    private final ObservableList<Profile> mItems = FXCollections.observableArrayList();
-    private Button mOpenButton;
     private File mDestination;
-    private OperationListener mOperationListener;
+    private final ProfileIndicator mIndicator = new ProfileIndicator();
+    private final ObservableList<Profile> mItems = FXCollections.observableArrayList();
     private Profile mLastRunProfile;
+    private ListView<Profile> mListView;
+    private final MapollageModule mModule;
+    private Button mOpenButton;
+    private OperationListener mOperationListener;
+    private Thread mOperationThread;
+    private final MapollagePreferences mPreferences = Preferences.getInstance().mapollage();
     private final ProfileManager mProfileManager = ProfileManager.getInstance();
     private LinkedList<Profile> mProfiles;
+    private final ProgressPanel mProgressPanel = new ProgressPanel();
+    private final Workbench mWorkbench;
 
     public MapollageView(Workbench workbench, MapollageModule module) {
         mWorkbench = workbench;
@@ -101,6 +102,85 @@ public class MapollageView extends BorderPane {
         postInit();
         initListeners();
         mListView.requestFocus();
+    }
+
+    void doCancel() {
+        mOperationThread.interrupt();
+    }
+
+    void doNavHome() {
+        setCenter(mListView);
+    }
+
+    void doNavLog() {
+        setCenter(mProgressPanel);
+    }
+
+    void doRun() {
+        profileRun(mLastRunProfile);
+    }
+
+    void profileEdit(Profile profile) {
+        String title = Dict.EDIT.toString();
+        boolean addNew = false;
+        boolean clone = profile != null && profile.getName() == null;
+
+        if (profile == null) {
+            title = Dict.ADD.toString();
+            addNew = true;
+            profile = new Profile();
+        } else if (clone) {
+            title = Dict.CLONE.toString();
+            profile.setLastRun(0);
+        }
+
+        ProfilePanel profilePanel = new ProfilePanel(profile);
+        final boolean add = addNew;
+        final Profile p = profile;
+        WorkbenchDialog dialog = WorkbenchDialog.builder(title, profilePanel, ButtonType.CANCEL, ButtonType.OK).onResult(buttonType -> {
+            if (buttonType == ButtonType.OK) {
+                profilePanel.save();
+                if (add || clone) {
+                    mProfiles.add(p);
+                }
+
+                profilesSave();
+                populateProfiles(p);
+            }
+        }).build();
+
+        dialog.setOnShown(event -> {
+            profilePanel.setOkButton(dialog.getButton(ButtonType.OK).get());
+        });
+
+        mWorkbench.showDialog(dialog);
+    }
+
+    void profilesSave() {
+        try {
+            mProfileManager.save();
+        } catch (IOException ex) {
+            LOGGER.log(Level.SEVERE, null, ex);
+        }
+    }
+
+    private void createUI() {
+        mDefaultFont = Font.getDefault();
+
+        mListView = new ListView<>();
+        mListView.setItems(mItems);
+        mListView.setCellFactory((ListView<Profile> param) -> new ProfileListCell());
+        Label welcomeLabel = new Label(mBundle.getString("welcome"));
+        welcomeLabel.setFont(Font.font(mDefaultFont.getName(), FontPosture.ITALIC, 18));
+
+        mOpenButton = mProgressPanel.getOpenButton();
+        mOpenButton.setOnAction((ActionEvent event) -> {
+            SystemHelper.desktopOpen(mDestination);
+        });
+
+        mOpenButton.setGraphic(MaterialIcon._Social.PUBL.getImageView(ICON_SIZE_TOOLBAR / 2));
+        mListView.setPlaceholder(welcomeLabel);
+        setCenter(mListView);
     }
 
     private void initListeners() {
@@ -127,7 +207,7 @@ public class MapollageView extends BorderPane {
                     mOpenButton.setDisable(false);
                     populateProfiles(mLastRunProfile);
 
-                    if (mOptions.isAutoOpen()) {
+                    if (mPreferences.isAutoOpen()) {
                         SystemHelper.desktopOpen(mDestination);
                     }
                 } else if (0 == placemarkCount) {
@@ -172,27 +252,6 @@ public class MapollageView extends BorderPane {
         };
     }
 
-    void doCancel() {
-        mOperationThread.interrupt();
-    }
-
-    void doNavHome() {
-        setCenter(mListView);
-    }
-
-    void doNavLog() {
-        setCenter(mProgressPanel);
-    }
-
-    void doRun() {
-        profileRun(mLastRunProfile);
-    }
-
-    private void postInit() {
-        profilesLoad();
-        populateProfiles(null);
-    }
-
     private void populateProfiles(Profile profile) {
         mItems.clear();
         Collections.sort(mProfiles);
@@ -207,40 +266,9 @@ public class MapollageView extends BorderPane {
         }
     }
 
-    void profileEdit(Profile profile) {
-        String title = Dict.EDIT.toString();
-        boolean addNew = false;
-        boolean clone = profile != null && profile.getName() == null;
-
-        if (profile == null) {
-            title = Dict.ADD.toString();
-            addNew = true;
-            profile = new Profile();
-        } else if (clone) {
-            title = Dict.CLONE.toString();
-            profile.setLastRun(0);
-        }
-
-        ProfilePanel profilePanel = new ProfilePanel(profile);
-        final boolean add = addNew;
-        final Profile p = profile;
-        WorkbenchDialog dialog = WorkbenchDialog.builder(title, profilePanel, ButtonType.CANCEL, ButtonType.OK).onResult(buttonType -> {
-            if (buttonType == ButtonType.OK) {
-                profilePanel.save();
-                if (add || clone) {
-                    mProfiles.add(p);
-                }
-
-                profilesSave();
-                populateProfiles(p);
-            }
-        }).build();
-
-        dialog.setOnShown(event -> {
-            profilePanel.setOkButton(dialog.getButton(ButtonType.OK).get());
-        });
-
-        mWorkbench.showDialog(dialog);
+    private void postInit() {
+        profilesLoad();
+        populateProfiles(null);
     }
 
     private void profileRemove(Profile profile) {
@@ -274,14 +302,6 @@ public class MapollageView extends BorderPane {
         try {
             mProfileManager.load();
             mProfiles = mProfileManager.getProfiles();
-        } catch (IOException ex) {
-            LOGGER.log(Level.SEVERE, null, ex);
-        }
-    }
-
-    void profilesSave() {
-        try {
-            mProfileManager.save();
         } catch (IOException ex) {
             LOGGER.log(Level.SEVERE, null, ex);
         }
@@ -322,25 +342,6 @@ public class MapollageView extends BorderPane {
                 mProgressPanel.out(Dict.ABORTING.toString());
             }
         }
-    }
-
-    private void createUI() {
-        mDefaultFont = Font.getDefault();
-
-        mListView = new ListView<>();
-        mListView.setItems(mItems);
-        mListView.setCellFactory((ListView<Profile> param) -> new ProfileListCell());
-        Label welcomeLabel = new Label(mBundle.getString("welcome"));
-        welcomeLabel.setFont(Font.font(mDefaultFont.getName(), FontPosture.ITALIC, 18));
-
-        mOpenButton = mProgressPanel.getOpenButton();
-        mOpenButton.setOnAction((ActionEvent event) -> {
-            SystemHelper.desktopOpen(mDestination);
-        });
-
-        mOpenButton.setGraphic(MaterialIcon._Social.PUBL.getImageView(ICON_SIZE_TOOLBAR / 2));
-        mListView.setPlaceholder(welcomeLabel);
-        setCenter(mListView);
     }
 
     class ProfileListCell extends ListCell<Profile> {

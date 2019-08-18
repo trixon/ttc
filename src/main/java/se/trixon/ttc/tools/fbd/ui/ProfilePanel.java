@@ -42,7 +42,7 @@ import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.SystemHelper;
 import se.trixon.almond.util.fx.control.FileChooserPane;
 import se.trixon.almond.util.fx.control.FileChooserPane.ObjectMode;
-import se.trixon.ttc.Options;
+import se.trixon.ttc.Preferences;
 import se.trixon.ttc.tools.fbd.DateSource;
 import se.trixon.ttc.tools.fbd.NameCase;
 import se.trixon.ttc.tools.fbd.Operation.Command;
@@ -68,7 +68,7 @@ public class ProfilePanel extends GridPane {
     private TextField mNameTextField;
     private Button mOkButton;
     private ComboBox<Command> mOperationComboBox;
-    private final Options mOptions = Options.getInstance();
+    private final Preferences mPreferences = Preferences.getInstance();
     private final Profile mProfile;
     private final ProfileManager mProfileManager = ProfileManager.getInstance();
     private CheckBox mRecursiveCheckBox;
@@ -115,6 +115,10 @@ public class ProfilePanel extends GridPane {
         mProfile.setReplaceExisting(mReplaceCheckBox.isSelected());
         mProfile.setCaseBase(mCaseBaseComboBox.getValue());
         mProfile.setCaseExt(mCaseExtComboBox.getValue());
+    }
+
+    void setOkButton(Button button) {
+        mOkButton = button;
     }
 
     private void createUI() {
@@ -268,7 +272,7 @@ public class ProfilePanel extends GridPane {
         String datePreview;
 
         try {
-            SimpleDateFormat simpleDateFormat = new SimpleDateFormat(mDatePatternComboBox.getValue(), mOptions.getLocale());
+            SimpleDateFormat simpleDateFormat = new SimpleDateFormat(mDatePatternComboBox.getValue(), mPreferences.general().getLocale());
             datePreview = simpleDateFormat.format(new Date(System.currentTimeMillis()));
         } catch (IllegalArgumentException ex) {
             datePreview = Dict.Dialog.ERROR.toString();
@@ -282,7 +286,4 @@ public class ProfilePanel extends GridPane {
         return validFormat;
     }
 
-    void setOkButton(Button button) {
-        mOkButton = button;
-    }
 }
