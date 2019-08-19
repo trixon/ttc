@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright 2019 Patrik Karlström.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -49,10 +49,10 @@ public class GeneralPreferences {
 
         mCategory = Category.of(Dict.GENERAL.toString(),
                 Group.of(Dict.SYSTEM.toString(),
-                        Setting.of(Dict.CALENDAR_LANGUAGE.toString(), mLocaleItems, mLocaleSelection)
+                        Setting.of(Dict.CALENDAR_LANGUAGE.toString(), mLocaleItems, mLocaleSelection).customKey("general.locale")
                 ),
                 Group.of(Dict.LOGGING.toString(),
-                        Setting.of(Dict.DYNAMIC_WORD_WRAP.toString(), mWordWrap)
+                        Setting.of(Dict.DYNAMIC_WORD_WRAP.toString(), mWordWrap).customKey("general.wordWrap")
                 )
         );
     }

@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright 2019 Patrik Karlström.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -57,21 +57,21 @@ public class MapollagePreferences {
 
         mCategory = Category.of("Mapollage",
                 Group.of(
-                        Setting.of(Dict.BORDER_SIZE.toString(), mBorderSizeControl, mThumbnailBorderSize),
-                        Setting.of(Dict.THUMBNAIL.toString(), mThumbnailSize)
+                        Setting.of(Dict.BORDER_SIZE.toString(), mBorderSizeControl, mThumbnailBorderSize).customKey("mapollage.thumbnail.border_size"),
+                        Setting.of(Dict.THUMBNAIL.toString(), mThumbnailSize).customKey("mapollage.thumbnail.size")
                                 .validate(IntegerRangeValidator.between(200, 2000, "errorMessage")),
-                        Setting.of(Dict.LATITUDE.toString(), mDefaultLat)
+                        Setting.of(Dict.LATITUDE.toString(), mDefaultLat).customKey("mapollage.default_lat")
                                 .validate(DoubleRangeValidator.between(-90, 90, "errorMessage")),
-                        Setting.of(Dict.LONGITUDE.toString(), mDefaultLon)
+                        Setting.of(Dict.LONGITUDE.toString(), mDefaultLon).customKey("mapollage.default_lon")
                                 .validate(DoubleRangeValidator.between(-180, 180, "errorMessage"))
                 ).description(Dict.PLACEMARK.toString()),
                 Group.of(mBundle.getString("OptionsPanel.cleanLabel"),
-                        Setting.of(mBundle.getString("OptionsPanel.cleanNs2CheckBox"), mCleanNS2),
-                        Setting.of(mBundle.getString("OptionsPanel.cleanSpaceCheckBox"), mCleanSpace)
+                        Setting.of(mBundle.getString("OptionsPanel.cleanNs2CheckBox"), mCleanNS2).customKey("mapollage.clean.ns2"),
+                        Setting.of(mBundle.getString("OptionsPanel.cleanSpaceCheckBox"), mCleanSpace).customKey("mapollage.clean.space")
                 ),
                 Group.of(
-                        Setting.of(mBundle.getString("OptionsPanel.logKmlCheckBox"), mPrintKml),
-                        Setting.of(mBundle.getString("ProgressPanel.autoOpenCheckBox"), mAutoOpen)
+                        Setting.of(mBundle.getString("OptionsPanel.logKmlCheckBox"), mPrintKml).customKey("mapollage.print_kml"),
+                        Setting.of(mBundle.getString("ProgressPanel.autoOpenCheckBox"), mAutoOpen).customKey("mapollage.auto_open")
                 )
         );
     }
