@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright 2019 Patrik Karlström.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -19,8 +19,12 @@ import com.dlsc.workbenchfx.Workbench;
 import com.dlsc.workbenchfx.model.WorkbenchModule;
 import com.dlsc.workbenchfx.view.controls.ToolbarItem;
 import javafx.application.Platform;
+import javafx.collections.ObservableMap;
 import javafx.scene.Node;
 import javafx.scene.control.Tooltip;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyCodeCombination;
+import javafx.scene.input.KeyCombination;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.icons.material.MaterialIcon;
 import se.trixon.ttc.MainApp;
@@ -42,7 +46,14 @@ public class FbdModule extends WorkbenchModule {
 
     @Override
     public Node activate() {
+        addAccelerators();
         return mView;
+    }
+
+    @Override
+    public void deactivate() {
+        removeAccelerators();
+        super.deactivate();
     }
 
     @Override
@@ -101,6 +112,13 @@ public class FbdModule extends WorkbenchModule {
         });
     }
 
+    private void addAccelerators() {
+        ObservableMap<KeyCombination, Runnable> accelerators = getWorkbench().getScene().getAccelerators();
+        accelerators.put(new KeyCodeCombination(KeyCode.N, KeyCombination.SHORTCUT_DOWN), (Runnable) () -> {
+            mView.profileEdit(null);
+        });
+    }
+
     private void initToolbar() {
         mHomeToolbarItem = new ToolbarItem(
                 MaterialIcon._Action.LIST.getImageView(MainApp.ICON_SIZE_TOOLBAR),
@@ -148,5 +166,10 @@ public class FbdModule extends WorkbenchModule {
         getToolbarControlsRight().setAll(
                 mAddToolbarItem
         );
+    }
+
+    private void removeAccelerators() {
+        ObservableMap<KeyCombination, Runnable> accelerators = getWorkbench().getScene().getAccelerators();
+        accelerators.remove(new KeyCodeCombination(KeyCode.N, KeyCombination.SHORTCUT_DOWN));
     }
 }

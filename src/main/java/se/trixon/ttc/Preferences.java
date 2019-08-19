@@ -65,7 +65,7 @@ public class Preferences {
                 Category.of(Dict.TOOLS.toString())
                         .expand()
                         .subCategories(
-                                Category.of("FileByDate"),
+                                //Category.of("FileByDate"),
                                 mMapollagePreferences.getCategory()
                         )
         ).persistWindowState(false).saveSettings(true).debugHistoryMode(false).buttonsVisibility(true);

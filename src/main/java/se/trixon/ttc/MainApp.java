@@ -67,7 +67,6 @@ public class MainApp extends Application {
     public static final int MODULE_ICON_SIZE = 32;
     private static final boolean IS_MAC = SystemUtils.IS_OS_MAC;
     private Action mAboutAction;
-    private Action mAboutDateFormatAction;
     private final AlmondFx mAlmondFX = AlmondFx.getInstance();
     private FbdModule mFbdModule;
     private Action mHelpAction;
@@ -128,9 +127,12 @@ public class MainApp extends Application {
             mStage.fireEvent(new WindowEvent(mStage, WindowEvent.WINDOW_CLOSE_REQUEST));
         });
 
-//        accelerators.put(new KeyCodeCombination(KeyCode.N, KeyCombination.SHORTCUT_DOWN), (Runnable) () -> {
-//            profileEdit(null);
-//        });
+        accelerators.put(new KeyCodeCombination(KeyCode.W, KeyCombination.SHORTCUT_DOWN), (Runnable) () -> {
+            if (mWorkbench.getActiveModule() != null) {
+                mWorkbench.closeModule(mWorkbench.getActiveModule());
+            }
+        });
+
         if (!IS_MAC) {
             accelerators.put(new KeyCodeCombination(KeyCode.COMMA, KeyCombination.SHORTCUT_DOWN), (Runnable) () -> {
                 displayOptions();
@@ -183,7 +185,6 @@ public class MainApp extends Application {
             SystemHelper.desktopBrowse("https://trixon.se/projects/ttc/documentation/");
         });
         //mHelpAction.setAccelerator(new KeyCodeCombination(KeyCode.F1, KeyCombination.SHORTCUT_ANY));
-        mHelpAction.setGraphic(MaterialIcon._Action.HELP_OUTLINE.getImageView(ICON_SIZE_DRAWER));
         mHelpAction.setAccelerator(KeyCombination.keyCombination("F1"));
 
         //about
@@ -218,16 +219,8 @@ public class MainApp extends Application {
             mWorkbench.showDialog(dialog);
         });
 
-        //about date format
-        String title = String.format(Dict.ABOUT_S.toString(), Dict.DATE_PATTERN.toString().toLowerCase());
-        mAboutDateFormatAction = new Action(title, (ActionEvent event) -> {
-            mWorkbench.hideNavigationDrawer();
-            SystemHelper.desktopBrowse("https://docs.oracle.com/javase/8/docs/api/java/text/SimpleDateFormat.html");
-        });
-
         mWorkbench.getNavigationDrawerItems().setAll(
                 ActionUtils.createMenuItem(mHelpAction),
-                ActionUtils.createMenuItem(mAboutDateFormatAction),
                 ActionUtils.createMenuItem(aboutAction)
         );
 
