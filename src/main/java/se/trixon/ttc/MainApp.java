@@ -97,8 +97,33 @@ public class MainApp extends Application {
         mStage.setTitle(APP_TITLE);
         mStage.show();
         initAccelerators();
-
         //mWorkbench.openModule(mPreferencesModule);
+    }
+
+    private void activateModule(int moduleIndexOnPage) {
+        if (moduleIndexOnPage == 0) {
+            moduleIndexOnPage = 10;
+        }
+
+        int pageIndex = 0;//TODO get actual page index
+        int moduleIndex = pageIndex * mWorkbench.getModulesPerPage() + moduleIndexOnPage - 1;
+        try {
+            mWorkbench.openModule(mWorkbench.getModules().get(moduleIndex));
+        } catch (IndexOutOfBoundsException e) {
+            //nvm
+        }
+    }
+
+    private void activateOpenModule(int moduleIndexOnPage) {
+        if (moduleIndexOnPage == 0) {
+            moduleIndexOnPage = 10;
+        }
+
+        try {
+            mWorkbench.openModule(mWorkbench.getOpenModules().get(moduleIndexOnPage - 1));
+        } catch (IndexOutOfBoundsException e) {
+            //nvm
+        }
     }
 
     private void createUI() {
@@ -122,6 +147,24 @@ public class MainApp extends Application {
 
     private void initAccelerators() {
         final ObservableMap<KeyCombination, Runnable> accelerators = mStage.getScene().getAccelerators();
+        for (int i = 0; i < 10; i++) {
+            final int index = i;
+            accelerators.put(new KeyCodeCombination(KeyCode.valueOf("DIGIT" + i), KeyCombination.SHORTCUT_DOWN, KeyCombination.SHIFT_DOWN), (Runnable) () -> {
+                activateModule(index);
+            });
+
+            accelerators.put(new KeyCodeCombination(KeyCode.valueOf("NUMPAD" + i), KeyCombination.SHORTCUT_DOWN, KeyCombination.SHIFT_DOWN), (Runnable) () -> {
+                activateModule(index);
+            });
+
+            accelerators.put(new KeyCodeCombination(KeyCode.valueOf("DIGIT" + i), KeyCombination.SHORTCUT_DOWN), (Runnable) () -> {
+                activateOpenModule(index);
+            });
+
+            accelerators.put(new KeyCodeCombination(KeyCode.valueOf("NUMPAD" + i), KeyCombination.SHORTCUT_DOWN), (Runnable) () -> {
+                activateOpenModule(index);
+            });
+        }
 
         accelerators.put(new KeyCodeCombination(KeyCode.Q, KeyCombination.SHORTCUT_DOWN), (Runnable) () -> {
             mStage.fireEvent(new WindowEvent(mStage, WindowEvent.WINDOW_CLOSE_REQUEST));
